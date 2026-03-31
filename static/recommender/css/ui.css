@@ -1,0 +1,510 @@
+/* ============================================================
+   Smart-Kissan · ui.css
+   Scoped carefully — hero/card fixes do NOT affect form pages
+   ============================================================ */
+
+/* FIX — Remove horizontal scrollbar on ALL pages */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* ===== CSS Variables ===== */
+:root{
+  --bg1:#071b2a;
+  --bg2:#083a33;
+
+  --card:rgba(255,255,255,.08);
+  --card2:rgba(255,255,255,.06);
+  --border:rgba(255,255,255,.10);
+
+  --text:#e9f1ff;
+  --muted:rgba(233,241,255,.72);
+
+  --primary:#2f6bff;
+  --primary2:#1f4fd6;
+}
+
+html[data-theme="light"]{
+  --bg1:#eef6ff;
+  --bg2:#e9fff6;
+
+  --card:rgba(0,0,0,.06);
+  --card2:rgba(0,0,0,.04);
+  --border:rgba(0,0,0,.10);
+
+  --text:#0b1726;
+  --muted:rgba(11,23,38,.70);
+
+  --primary:#2f6bff;
+  --primary2:#1f4fd6;
+}
+
+/* ===== Base Body ===== */
+.sk-body{
+  margin:0;
+  overflow-x: hidden;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 600px at 20% 20%, #0c3a7a 0%, transparent 60%),
+    radial-gradient(1200px 600px at 80% 30%, #0a5b4f 0%, transparent 60%),
+    linear-gradient(120deg,var(--bg1),var(--bg2));
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+.sk-container{
+  width:min(1200px, 92%);
+  margin:0 auto;
+}
+
+.sk-main{ padding: 28px 0 36px; }
+
+/* ===== Card (generic — used everywhere) ===== */
+.sk-card{
+  background: linear-gradient(180deg, var(--card), var(--card2));
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:28px 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.22);
+  backdrop-filter: blur(12px);
+}
+
+.muted{ color: var(--muted); }
+
+.sk-row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.sk-row-end{ justify-content:flex-end; }
+
+/* ===== Generic Input ===== */
+.sk-input {
+  box-sizing: border-box;
+  background: rgba(255,255,255,.07);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.sk-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(47,107,255,.18);
+}
+
+html[data-theme="light"] .sk-input {
+  background: rgba(0,0,0,.04);
+  color: var(--text);
+}
+
+/* ===== Buttons ===== */
+.sk-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:10px 16px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  text-decoration:none;
+  color:var(--text);
+  background: rgba(255,255,255,.06);
+  transition:.15s ease;
+  font-weight:700;
+  cursor:pointer;
+  white-space: nowrap;
+  font-size: 14px;
+}
+.sk-btn:hover{ transform: translateY(-1px); }
+
+.sk-btn-primary{
+  background: linear-gradient(180deg, var(--primary), var(--primary2));
+  border-color: rgba(255,255,255,.18);
+}
+.sk-btn-ghost{ background: rgba(255,255,255,.05); }
+
+/* ===== Navbar ===== */
+.sk-navbar{
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: rgba(7, 27, 42, .55);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+
+/* FIX — use padding instead of width:100% so Login button is never cut off */
+.sk-navbar-inner{
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 24px; /* generous horizontal padding on both sides */
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+/* ===== Brand (logo + text) ===== */
+.sk-brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-decoration:none;
+  color:var(--text);
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.sk-navbar .sk-logo {
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+  min-height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.06);
+  box-shadow: 0 8px 24px rgba(0,0,0,.22);
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sk-navbar .sk-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 999px;
+}
+
+.sk-navbar .sk-brand-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.sk-navbar .sk-brand-sub {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* ===== Center Nav Links ===== */
+.sk-nav{
+  flex:1 1 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  scrollbar-width:none;
+  min-width: 0;
+}
+.sk-nav::-webkit-scrollbar{ display:none; }
+
+.sk-navlink{
+  color:var(--muted);
+  text-decoration:none;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid transparent;
+  transition:.15s ease;
+  font-weight:800;
+  white-space:nowrap;
+  font-size: 14px;
+}
+.sk-navlink:hover,
+.sk-navlink.active{
+  color:var(--text);
+  background: rgba(255,255,255,.08);
+  border-color: rgba(255,255,255,.16);
+}
+
+/* ===== Right Actions — never shrink, always fully visible ===== */
+.sk-actions{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:nowrap;
+  flex-shrink: 0;
+}
+
+.sk-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  font-weight:900;
+  white-space:nowrap;
+  font-size:13px;
+  cursor:pointer;
+}
+
+/* ===================================================
+   HOME PAGE — Hero Section
+   =================================================== */
+.sk-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.sk-hero .sk-card h1 {
+  margin: 0 0 16px 0;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--text);
+}
+
+.sk-hero .sk-card h3 {
+  margin: 0 0 14px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.sk-hero .sk-bullets {
+  padding-left: 18px;
+  margin: 0 0 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--muted);
+  line-height: 1.6;
+  list-style: disc;
+}
+
+.sk-hero .sk-bullets li { color: var(--muted); }
+.sk-hero .sk-bullets li b { color: var(--text); font-weight: 700; }
+
+@media (max-width: 860px) {
+  .sk-hero { grid-template-columns: 1fr; }
+}
+
+/* ===================================================
+   HOME PAGE — Feature Cards Grid
+   =================================================== */
+.sk-cards-grid {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.sk-cards-grid .sk-card h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.sk-cards-grid .sk-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+@media (max-width: 1000px) {
+  .sk-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+
+/* ===================================================
+   MANUAL PAGE — Input fix
+   =================================================== */
+.manual-card input,
+.manual-card select,
+.manual-card textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 10px;
+  padding: 10px 13px;
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  margin-top: 2px;
+}
+
+.manual-card input:focus,
+.manual-card select:focus,
+.manual-card textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(47,107,255,.18);
+}
+
+html[data-theme="light"] .manual-card input,
+html[data-theme="light"] .manual-card select,
+html[data-theme="light"] .manual-card textarea {
+  background: rgba(0,0,0,.05);
+  border-color: rgba(0,0,0,.18);
+  color: var(--text);
+}
+
+/* ===================================================
+   FORM PAGES — .sk-form scoped styles
+   =================================================== */
+.sk-form-wrap {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.sk-form h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  color: var(--text);
+}
+
+.sk-form .muted {
+  font-size: 14px;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.sk-form h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin: 20px 0 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.sk-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.sk-form input,
+.sk-form select,
+.sk-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255,255,255,.07);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-size: 15px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  margin-bottom: 18px;
+}
+
+.sk-form input:focus,
+.sk-form select:focus,
+.sk-form textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(47,107,255,.18);
+}
+
+html[data-theme="light"] .sk-form input,
+html[data-theme="light"] .sk-form select,
+html[data-theme="light"] .sk-form textarea {
+  background: rgba(0,0,0,.04);
+  color: var(--text);
+}
+
+.sk-form .sk-btn-submit {
+  width: 100%;
+  padding: 13px;
+  font-size: 16px;
+  margin-top: 6px;
+  border-radius: 12px;
+}
+
+.sk-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 20px;
+}
+
+@media (max-width: 600px) {
+  .sk-form-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== Toast Messages ===== */
+.sk-toast-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sk-toast {
+  padding: 12px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  background: rgba(255,255,255,.08);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.sk-toast.success { border-color: #22c55e; background: rgba(34,197,94,.12); }
+.sk-toast.error   { border-color: #ef4444; background: rgba(239,68,68,.12); }
+.sk-toast.warning { border-color: #f59e0b; background: rgba(245,158,11,.12); }
+.sk-toast.info    { border-color: #3b82f6; background: rgba(59,130,246,.12); }
+
+/* ===== Footer ===== */
+.sk-footer{
+  padding: 18px 0 6px;
+  color: var(--muted);
+  font-size:14px;
+}
+
+/* ===== Tables ===== */
+.sk-table-wrap{ overflow:auto; border-radius:16px; }
+.sk-table{
+  width:100%;
+  border-collapse: collapse;
+  min-width: 880px;
+}
+.sk-table thead th{
+  position:sticky;
+  top:0;
+  background: rgba(0,0,0,.22);
+  backdrop-filter: blur(10px);
+  z-index:2;
+  color:var(--text);
+}
+.sk-table th, .sk-table td{
+  padding:12px 12px;
+  border-bottom:1px solid var(--border);
+  color:var(--muted);
+  vertical-align:top;
+}
+.sk-table tbody tr:hover{
+  background: rgba(255,255,255,.04);
+}
+.sk-table tbody tr:nth-child(2n){
+  background: rgba(255,255,255,.02);
+}

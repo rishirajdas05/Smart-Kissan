@@ -1,0 +1,372 @@
+{# templates/recommender/soil.html #}
+{% extends "recommender/base.html" %}
+{% block title %}Soil Helper{% endblock %}
+
+{% block content %}
+<section class="soil-page">
+  <div class="soil-wrap">
+
+    <header class="soil-header">
+      <h1 class="soil-title">Soil Helper</h1>
+      <p class="soil-subtitle">Enter soil pH and moisture to get insights and recommended actions for your field.</p>
+    </header>
+
+    <div class="soil-grid">
+
+      <!-- LEFT: Form -->
+      <div class="soil-card">
+        <h3 class="soil-card-title">Soil Analysis Input</h3>
+
+        <form method="post" class="soil-form" novalidate>
+          {% csrf_token %}
+
+          <div class="soil-field">
+            <label for="{{ form.ph.id_for_label }}">
+              🧪 Soil pH
+            </label>
+            {{ form.ph }}
+            <span class="soil-hint">Ideal range: 6.0 – 7.5 for most crops</span>
+            {% if form.ph.errors %}
+              <div class="soil-error">{{ form.ph.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="soil-field">
+            <label for="{{ form.moisture.id_for_label }}">
+              💧 Moisture (%)
+            </label>
+            {{ form.moisture }}
+            <span class="soil-hint">Ideal range: 30% – 70% for most crops</span>
+            {% if form.moisture.errors %}
+              <div class="soil-error">{{ form.moisture.errors }}</div>
+            {% endif %}
+          </div>
+
+          <button class="soil-btn" type="submit">
+            🔍 Analyze Soil
+          </button>
+        </form>
+      </div>
+
+      <!-- RIGHT: Results or Guide -->
+      <div class="soil-right">
+
+        {% if analysis %}
+          <!-- Results -->
+          <div class="soil-result-card">
+            <div class="soil-result-header">
+              <span class="soil-result-icon">✅</span>
+              <h3>Analysis Results</h3>
+            </div>
+
+            <div class="soil-section">
+              <h4>💡 Insights</h4>
+              <ul class="soil-list">
+                {% for i in analysis.insights %}
+                  <li>{{ i }}</li>
+                {% empty %}
+                  <li class="soil-empty">No insights available.</li>
+                {% endfor %}
+              </ul>
+            </div>
+
+            <div class="soil-divider"></div>
+
+            <div class="soil-section">
+              <h4>🛠 Recommended Actions</h4>
+              <ul class="soil-list soil-list-actions">
+                {% for a in analysis.actions %}
+                  <li>{{ a }}</li>
+                {% empty %}
+                  <li class="soil-empty">No actions recommended.</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+
+        {% else %}
+          <!-- Guide when no results yet -->
+          <div class="soil-guide">
+
+            <div class="soil-guide-card">
+              <div class="soil-guide-icon">🌱</div>
+              <div>
+                <h4>What is Soil pH?</h4>
+                <p>pH measures soil acidity. Values below 6 are acidic, above 7.5 are alkaline. Most crops prefer 6.0–7.5.</p>
+              </div>
+            </div>
+
+            <div class="soil-guide-card">
+              <div class="soil-guide-icon">💧</div>
+              <div>
+                <h4>What is Soil Moisture?</h4>
+                <p>Moisture % indicates water content. Too low causes drought stress; too high causes root rot.</p>
+              </div>
+            </div>
+
+            <div class="soil-guide-card">
+              <div class="soil-guide-icon">⚗️</div>
+              <div>
+                <h4>pH Quick Reference</h4>
+                <p>
+                  <strong>Acidic (&lt;6.0):</strong> Add lime to raise pH.<br>
+                  <strong>Neutral (6–7.5):</strong> Ideal for most crops.<br>
+                  <strong>Alkaline (&gt;7.5):</strong> Add sulfur to lower pH.
+                </p>
+              </div>
+            </div>
+
+            <div class="soil-guide-card">
+              <div class="soil-guide-icon">📊</div>
+              <div>
+                <h4>Moisture Quick Reference</h4>
+                <p>
+                  <strong>Low (&lt;30%):</strong> Irrigate immediately.<br>
+                  <strong>Optimal (30–70%):</strong> Good for growth.<br>
+                  <strong>High (&gt;70%):</strong> Improve drainage.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ===== Soil Page — fully scoped ===== */
+  .soil-page { padding: 28px 0 60px; }
+
+  .soil-wrap {
+    width: min(1120px, calc(100% - 48px));
+    margin: 0 auto;
+  }
+
+  .soil-header { margin-bottom: 28px; }
+
+  .soil-title {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+    color: var(--text);
+  }
+
+  .soil-subtitle {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 600px;
+  }
+
+  /* Two-column layout */
+  .soil-grid {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .soil-grid { grid-template-columns: 1fr; }
+  }
+
+  /* Form card */
+  .soil-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 22px;
+    padding: 28px 24px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.22);
+  }
+
+  .soil-card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 22px;
+    color: var(--text);
+  }
+
+  /* Form fields */
+  .soil-form { display: flex; flex-direction: column; gap: 0; }
+
+  .soil-field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+
+  .soil-field label {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 7px;
+  }
+
+  .soil-field input,
+  .soil-field select {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.14);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+
+  .soil-field input:focus,
+  .soil-field select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(47,107,255,.18);
+  }
+
+  html[data-theme="light"] .soil-field input,
+  html[data-theme="light"] .soil-field select {
+    background: rgba(0,0,0,.04);
+    border-color: rgba(0,0,0,.14);
+    color: var(--text);
+  }
+
+  .soil-hint {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 5px;
+    opacity: 0.8;
+  }
+
+  .soil-error {
+    font-size: 13px;
+    color: #fca5a5;
+    margin-top: 5px;
+  }
+
+  /* Submit button */
+  .soil-btn {
+    width: 100%;
+    padding: 13px;
+    border-radius: 12px;
+    border: none;
+    background: linear-gradient(180deg, var(--primary), var(--primary2));
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    margin-top: 4px;
+  }
+
+  .soil-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(47,107,255,.35);
+  }
+
+  /* Results card */
+  .soil-result-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 22px;
+    padding: 24px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.22);
+  }
+
+  .soil-result-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .soil-result-icon { font-size: 22px; }
+
+  .soil-result-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .soil-section { margin-bottom: 16px; }
+
+  .soil-section h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 10px;
+  }
+
+  .soil-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 18px 0;
+  }
+
+  .soil-list {
+    margin: 0;
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .soil-list-actions li::marker { color: var(--primary); }
+
+  .soil-empty { opacity: 0.6; list-style: none; }
+
+  /* Guide cards */
+  .soil-guide {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .soil-guide-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 16px;
+    padding: 16px 18px;
+    backdrop-filter: blur(8px);
+  }
+
+  .soil-guide-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+
+  .soil-guide-card h4 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .soil-guide-card p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  html[data-theme="light"] .soil-card,
+  html[data-theme="light"] .soil-result-card,
+  html[data-theme="light"] .soil-guide-card {
+    background: rgba(0,0,0,.04);
+    border-color: rgba(0,0,0,.09);
+  }
+</style>
+{% endblock %}

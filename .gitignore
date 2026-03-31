@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+*.so
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Django
+*.sqlite3
+staticfiles/
+media/
+local_settings.py
+
+# Environment variables
+.env
+.env.*
+
+# ML model artifacts — too large for GitHub (retrained on deploy)
+ml/artifacts/crop_model.joblib
+ml/artifacts/crop_label_encoder.joblib
+ml/artifacts/crop_scaler.joblib
+ml/artifacts/crop_bundle.joblib
+ml/artifacts/random_crop_model.joblib
+ml/artifacts/rf_crop_model.joblib
+recommender/ml/artifacts/*.joblib
+
+# Dataset CSVs — regenerated on deploy
+recommender/dataset/Crop_recommendation_186.csv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

@@ -1,0 +1,79 @@
+{% extends "recommender/../recommender/../recommender/base.html" %}
+{% block title %}Crops • Smart-Kissan{% endblock %}
+
+{% block content %}
+<div class="pagehead">
+  <h1>Crops Library</h1>
+  <p class="muted">Browse all crops. Search by name and optionally enter city to view demo weather.</p>
+</div>
+
+<div class="card">
+  <form method="get" class="form">
+    <div class="grid2">
+      <div class="field">
+        <label>{{ form.q.label }}</label>
+        {{ form.q }}
+      </div>
+      <div class="field">
+        <label>{{ form.city.label }}</label>
+        {{ form.city }}
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" type="submit">Search</button>
+      <a class="btn ghost" href="{% url 'crops' %}">Reset</a>
+    </div>
+  </form>
+</div>
+
+{% if weather %}
+  <div class="card mt">
+    <div class="card__head">
+      <h2>City Weather (Demo/Live)</h2>
+      <p class="muted">{{ weather.desc }}</p>
+    </div>
+    <div class="grid3">
+      <div class="stat">
+        <div class="stat__k">City</div>
+        <div class="stat__v">{{ weather.city }}</div>
+      </div>
+      <div class="stat">
+        <div class="stat__k">Temp</div>
+        <div class="stat__v">{{ weather.temp_c }}°C</div>
+      </div>
+      <div class="stat">
+        <div class="stat__k">Humidity</div>
+        <div class="stat__v">{{ weather.humidity }}%</div>
+      </div>
+      <div class="stat">
+        <div class="stat__k">Rain</div>
+        <div class="stat__v">{{ weather.rain_mm }} mm</div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<div class="card mt">
+  <div class="card__head">
+    <h2>All Crops ({{ crops|length }})</h2>
+    {% if q %}<p class="muted">Filtered by: "{{ q }}"</p>{% endif %}
+  </div>
+
+  <div class="cropgrid">
+    {% for c in crops %}
+      <div class="cropcard">
+        <div class="cropcard__top">
+          <div class="cropname">{{ c.name }}</div>
+          <div class="badge">{{ c.season }}</div>
+        </div>
+        <div class="muted small"><b>Soil:</b> {{ c.soil }}</div>
+        <div class="muted small"><b>Water:</b> {{ c.water }}</div>
+        <div class="muted small"><b>Fertilizer:</b> {{ c.fertilizer }}</div>
+        <div class="small"><b>Tips:</b> {{ c.tips }}</div>
+      </div>
+    {% empty %}
+      <div class="muted">No crops found.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
