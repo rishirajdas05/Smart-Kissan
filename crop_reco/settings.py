@@ -8,10 +8,14 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-change-this-in-production")
 
-# DEBUG=True temporarily to see 500 error on Render
-DEBUG = True
+DEBUG = 'RENDER' not in os.environ
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "smart-kissan.onrender.com",
+    "smart-kissan-2jyj.onrender.com",
+]
 
 RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
 if RENDER_EXTERNAL_HOSTNAME:
@@ -133,4 +137,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
 
-# v3 — forced redeploy with DEBUG=True
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER     = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_SSL_REDIRECT         = True
+    SESSION_COOKIE_SECURE       = True
+    CSRF_COOKIE_SECURE          = True
+    SECURE_BROWSER_XSS_FILTER   = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS             = "DENY"
