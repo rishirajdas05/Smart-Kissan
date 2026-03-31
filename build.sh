@@ -2,10 +2,14 @@
 set -o errexit
 
 pip install --upgrade pip
+
+# Install PyJWT first before anything else
+pip install PyJWT==2.8.0
+
 pip install -r requirements.txt
 
-# Force reinstall PyJWT to fix allauth jwt import issue
-pip install --force-reinstall PyJWT==2.8.0
+# Verify jwt is importable
+python -c "import jwt; print('jwt OK:', jwt.__version__)"
 
 python manage.py collectstatic --no-input
 python manage.py migrate
