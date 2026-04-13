@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% block title %}Mandi Locator{% endblock %}
+{% block content %}
+
+<div class="page-header" style="background:linear-gradient(135deg,#1c1917,#44403c,#78716c);">
+  <h1>🏪 Mandi Locator</h1>
+  <p>Find mandis with current crop prices powered by Agmarknet (data.gov.in).</p>
+</div>
+
+<!-- Search bar -->
+<div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:flex-end;">
+  <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;flex:1;">
+    <div>
+      <label class="form-label">State</label>
+      <select name="state" class="form-control" style="min-width:180px;">
+        <option value="">-- Select State --</option>
+        {% for s in all_states %}
+        <option value="{{ s }}" {% if s == state %}selected{% endif %}>{{ s|title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="form-label">Crop</label>
+      <select name="crop" class="form-control" style="min-width:150px;">
+        {% for c in crops %}
+        <option value="{{ c }}" {% if c == selected_crop %}selected{% endif %}>{{ c|title }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div style="align-self:flex-end;">
+      <button type="submit" class="btn btn-primary">🔍 Find Prices</button>
+    </div>
+  </form>
+</div>
+
+<!-- Live/Estimated badge + MSP -->
+<div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center;">
+  <div style="padding:12px 18px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);
+              border-radius:10px;display:flex;align-items:center;gap:12px;flex:1;">
+    <span style="font-size:1.4rem;">💰</span>
+    <div>
+      <span style="font-weight:700;color:var(--text);">Government MSP for {{ selected_crop|title }}:</span>
+      <span style="font-size:1.15rem;font-weight:800;color:#d97706;margin-left:8px;">₹{{ msp }}/quintal</span>
+      <span style="font-size:.78rem;color:var(--text3);margin-left:8px;">Prices below MSP indicate distress selling</span>
+    </div>
+  </div>
+
+  <div style="padding:10px 16px;border-radius:10px;font-size:.82rem;font-weight:700;
+              {% if is_live %}background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:#16a34a;
+              {% else %}background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);color:#d97706;{% endif %}">
+    {% if is_live %}
+      🟢 Live Agmarknet Data · {{ mandi_count }} markets found
+    {% else %}
+      🟡 Estimated Prices · {{ mandi_count }} mandis
+      {% if api_error %}<div style="font-size:.72rem;font-weight:400;margin-top:2px;opacity:.8;">{{ api_error|truncatechars:60 }}</div>{% endif %}
+    {% endif %}
+  </div>
+</div>
+
+<!-- Mandi cards -->
+{% if mandis %}
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:24px;">
+  {% for m in mandis %}
+  <div class="card">
+    <div class="card-body">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+        <div>
+          <div style="font-weight:700;font-size:.98rem;color:var(--text);">{{ m.name }}</div>
+          <div style="font-size:.8rem;color:var(--text3);margin-top:2px;">
+            📍 {{ m.city }}{% if m.state_name %} · {{ m.state_name }}{% endif %} · {{ m.type|default:"APMC" }}
+          </div>
+          {% if m.variety and m.variety != '—' %}
+          <div style="font-size:.75rem;color:var(--text3);margin-top:1px;">Variety: {{ m.variety }}</div>
+          {% endif %}
+          {% if m.date and m.date != 'Estimated' %}
+          <div style="font-size:.72rem;color:var(--text3);margin-top:1px;">📅 {{ m.date }}</div>
+          {% endif %}
+        </div>
+        <span style="font-size:1.3rem;color:{% if m.trend == '↑' %}#16a34a{% else %}#dc2626{% endif %};">
+          {{ m.trend }}
+        </span>
+      </div>
+
+      <!-- Price grid -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+        <div style="text-align:center;padding:10px 6px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);">
+          <div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;">Min</div>
+          <div style="font-weight:700;font-size:.95rem;color:var(--text);margin-top:3px;">₹{{ m.min_price }}</div>
+        </div>
+        <div style="text-align:center;padding:10px 6px;background:rgba(34,197,94,.08);border-radius:8px;border:2px solid rgba(34,197,94,.2);">
+          <div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;">Modal</div>
+          <div style="font-weight:800;font-size:1.05rem;color:var(--green-400);margin-top:3px;">₹{{ m.modal_price }}</div>
+        </div>
+        <div style="text-align:center;padding:10px 6px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);">
+          <div style="font-size:.68rem;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;">Max</div>
+          <div style="font-weight:700;font-size:.95rem;color:var(--text);margin-top:3px;">₹{{ m.max_price }}</div>
+        </div>
+      </div>
+
+      <!-- vs MSP indicator -->
+      {% if m.modal_price >= msp %}
+      <div style="padding:7px 10px;background:rgba(34,197,94,.1);border-radius:8px;
+                  font-size:.78rem;color:#16a34a;font-weight:600;margin-bottom:10px;">
+        ✅ Above MSP — Good time to sell (₹{{ m.modal_price }} vs ₹{{ msp }})
+      </div>
+      {% else %}
+      <div style="padding:7px 10px;background:rgba(239,68,68,.1);border-radius:8px;
+                  font-size:.78rem;color:#dc2626;font-weight:600;margin-bottom:10px;">
+        ⚠️ Below MSP — Consider waiting for better price
+      </div>
+      {% endif %}
+
+      {% if m.lat and m.lat != 0 %}
+      <a href="https://www.google.com/maps?q={{ m.lat }},{{ m.lng }}" target="_blank"
+         class="btn btn-secondary" style="width:100%;text-align:center;padding:7px;font-size:.82rem;">
+        🗺️ View on Map
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card">
+  <div class="card-body" style="text-align:center;padding:60px;color:var(--text3);">
+    <div style="font-size:3rem;">🏪</div>
+    <div style="font-size:1rem;font-weight:600;color:var(--text2);margin-top:12px;">No mandi data found</div>
+    <div style="font-size:.85rem;margin-top:6px;">Select a state and crop to see prices</div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Data source notice -->
+<div style="padding:12px 16px;background:var(--surface2);border-radius:10px;
+            font-size:.78rem;color:var(--text3);border:1px solid var(--border);">
+  {% if is_live %}
+  📊 <strong style="color:var(--text2);">Live Data:</strong> Prices fetched from
+  <a href="https://agmarknet.gov.in" target="_blank" style="color:var(--green-400);">Agmarknet</a>
+  via <a href="https://data.gov.in" target="_blank" style="color:var(--green-400);">data.gov.in</a> API.
+  Prices are in ₹/quintal. Data may be 1-2 days delayed.
+  {% else %}
+  📊 <strong style="color:var(--text2);">Estimated Prices:</strong> Based on MSP with seasonal variation.
+  For live prices, the Agmarknet API is configured — data may not be available for this state/crop combination.
+  Try a different state or crop.
+  {% endif %}
+</div>
+
+{% endblock %}

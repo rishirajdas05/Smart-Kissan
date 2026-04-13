@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% block title %}Manual Recommendation{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>✏️ Manual Crop Recommendation</h1>
+  <p>Enter your soil parameters and our AI will recommend the top 3 best crops for your land.</p>
+</div>
+
+{% if error %}<div class="alert alert-error">❌ {{ error }}</div>{% endif %}
+
+<div style="display:grid;grid-template-columns:420px 1fr;gap:24px;" class="manual-grid">
+
+<!-- ── FORM ── -->
+<div class="card animate-slide-up" style="height:fit-content;">
+  <div class="card-header">
+    <span style="font-size:1.3rem;">🧪</span>
+    <h3>Soil & Climate Parameters</h3>
+  </div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+
+      <div style="background:var(--green-50);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:16px;">
+        <div style="font-weight:700;color:var(--green-400);margin-bottom:12px;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;">🌱 Soil Nutrients (kg/ha)</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Nitrogen (N)</label>
+            <input type="number" name="nitrogen" class="form-control" placeholder="e.g. 80" min="0" max="300" value="{{ inputs.nitrogen|default:'' }}" required>
+            <div class="form-hint">0–300 kg/ha</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phosphorus (P)</label>
+            <input type="number" name="phosphorus" class="form-control" placeholder="e.g. 40" min="0" max="200" value="{{ inputs.phosphorus|default:'' }}" required>
+            <div class="form-hint">0–200 kg/ha</div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Potassium (K)</label>
+            <input type="number" name="potassium" class="form-control" placeholder="e.g. 40" min="0" max="300" value="{{ inputs.potassium|default:'' }}" required>
+            <div class="form-hint">0–300 kg/ha</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(14,165,233,.07);border:1px solid rgba(14,165,233,.18);border-radius:10px;padding:16px;margin-bottom:16px;">
+        <div style="font-weight:700;color:var(--sky);margin-bottom:12px;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;">🌡️ Climate Conditions</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Temperature (°C)</label>
+            <input type="number" name="temperature" class="form-control" placeholder="e.g. 28" min="-10" max="55" step="0.1" value="{{ inputs.temperature|default:'' }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Humidity (%)</label>
+            <input type="number" name="humidity" class="form-control" placeholder="e.g. 65" min="0" max="100" value="{{ inputs.humidity|default:'' }}" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rainfall (mm)</label>
+            <input type="number" name="rainfall" class="form-control" placeholder="e.g. 100" min="0" max="500" value="{{ inputs.rainfall|default:'' }}" required>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.18);border-radius:10px;padding:16px;margin-bottom:20px;">
+        <div style="font-weight:700;color:var(--amber);margin-bottom:12px;font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;">⚗️ Soil pH</div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">pH Level: <span id="ph-val" style="color:var(--green-400);font-size:1.1rem;font-family:'Space Mono';">{{ inputs.ph|default:'7.0' }}</span></label>
+          <input type="range" name="ph" id="ph-slider" min="3" max="10" step="0.1"
+                 value="{{ inputs.ph|default:'7.0' }}"
+                 oninput="document.getElementById('ph-val').textContent=parseFloat(this.value).toFixed(1)">
+          <div style="display:flex;justify-content:space-between;font-size:.72rem;color:var(--text3);margin-top:5px;">
+            <span>3.0 Acidic</span><span>6.5 Neutral</span><span>10.0 Alkaline</span>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg btn-full">🔍 Get AI Recommendation</button>
+    </form>
+
+    <div style="margin-top:14px;">
+      <div style="font-size:.78rem;color:var(--text3);margin-bottom:8px;">⚡ Quick fill:</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button onclick="fillSample('wheat')"   class="btn btn-secondary" style="padding:5px 12px;font-size:.8rem;">🌾 Wheat</button>
+        <button onclick="fillSample('rice')"    class="btn btn-secondary" style="padding:5px 12px;font-size:.8rem;">🌾 Rice</button>
+        <button onclick="fillSample('cotton')"  class="btn btn-secondary" style="padding:5px 12px;font-size:.8rem;">☁️ Cotton</button>
+        <button onclick="fillSample('maize')"   class="btn btn-secondary" style="padding:5px 12px;font-size:.8rem;">🌽 Maize</button>
+        <button onclick="fillSample('mustard')" class="btn btn-secondary" style="padding:5px 12px;font-size:.8rem;">🌼 Mustard</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── RESULTS ── -->
+<div>
+{% if submitted %}
+<div class="animate-slide-up">
+  <div style="margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:1.1rem;">🏆</span>
+    <span style="font-weight:700;color:var(--text);font-size:1rem;">Top 3 Recommended Crops</span>
+    <span class="badge badge-green">AI Ranked</span>
+  </div>
+
+  {% for r in results %}
+  <div class="result-card {% if not forloop.first %}alt{% endif %}" style="margin-bottom:20px;">
+
+    <div class="result-card-header">
+      <div>
+        <div style="font-size:.73rem;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">
+          {% if forloop.first %}🥇 Best Match{% elif forloop.counter == 2 %}🥈 Alternative #2{% else %}🥉 Alternative #3{% endif %}
+        </div>
+        <div class="result-crop-name">{{ r.info.emoji|default:'🌱' }} {{ r.crop|title }}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:2rem;font-weight:700;font-family:'Space Mono',monospace;
+                    color:{% if forloop.first %}var(--amber-light){% else %}var(--green-300){% endif %};">
+          {{ r.confidence }}%
+        </div>
+        <div style="font-size:.73rem;opacity:.7;">AI Confidence</div>
+      </div>
+    </div>
+
+    <div class="result-card-body">
+      <div class="confidence-bar">
+        <div class="confidence-fill" style="width:{{ r.confidence }}%"></div>
+      </div>
+
+      <div class="result-meta-grid">
+        <div class="result-meta-item">
+          <div class="label">🗓 Season</div>
+          <div class="value">{{ r.info.season|default:"—" }}</div>
+        </div>
+        <div class="result-meta-item">
+          <div class="label">💧 Water Need</div>
+          <div class="value">{{ r.info.water|default:"—" }}</div>
+        </div>
+        <div class="result-meta-item">
+          <div class="label">⏱ Duration</div>
+          <div class="value">{{ r.info.time|default:"—" }}</div>
+        </div>
+      </div>
+
+      <div class="tips-section">
+        <div class="tips-section-title">💡 Farming Tips & Essentials</div>
+        <ul class="tips-list">
+          {% for tip in r.info.tips %}
+          <li><span style="color:var(--green-400);">→</span> {{ tip }}</li>
+          {% empty %}
+          <li>No specific tips available for this crop.</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="msp-badge">
+        <span style="font-size:1.3rem;">💰</span>
+        <div>
+          <div class="label">Government MSP Price</div>
+          <div class="val">₹{{ r.msp }}<span style="font-size:.75rem;font-weight:400;"> /quintal</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="card" style="display:flex;align-items:center;justify-content:center;min-height:420px;">
+  <div style="text-align:center;color:var(--text3);padding:40px;">
+    <div style="font-size:4rem;margin-bottom:16px;opacity:.35;">🌾</div>
+    <div style="font-size:1.05rem;font-weight:600;margin-bottom:8px;color:var(--text2);">Fill the form to get recommendations</div>
+    <div style="font-size:.88rem;">Our AI will analyze your soil & climate parameters<br>and recommend the top 3 crops with full growing tips.</div>
+  </div>
+</div>
+{% endif %}
+</div>
+
+</div>
+<style>@media(max-width:960px){.manual-grid{grid-template-columns:1fr!important;}}</style>
+<script>
+const samples = {
+  wheat:   {nitrogen:90, phosphorus:42, potassium:35, temperature:20, humidity:65, ph:6.5, rainfall:70},
+  rice:    {nitrogen:90, phosphorus:42, potassium:42, temperature:28, humidity:82, ph:6.2, rainfall:200},
+  cotton:  {nitrogen:110,phosphorus:55, potassium:55, temperature:32, humidity:65, ph:7.0, rainfall:90},
+  maize:   {nitrogen:90, phosphorus:42, potassium:28, temperature:27, humidity:65, ph:6.5, rainfall:85},
+  mustard: {nitrogen:80, phosphorus:30, potassium:35, temperature:18, humidity:55, ph:6.8, rainfall:50},
+};
+function fillSample(crop) {
+  const s = samples[crop];
+  document.querySelector('[name=nitrogen]').value    = s.nitrogen;
+  document.querySelector('[name=phosphorus]').value  = s.phosphorus;
+  document.querySelector('[name=potassium]').value   = s.potassium;
+  document.querySelector('[name=temperature]').value = s.temperature;
+  document.querySelector('[name=humidity]').value    = s.humidity;
+  document.querySelector('[name=rainfall]').value    = s.rainfall;
+  const sl = document.getElementById('ph-slider');
+  sl.value = s.ph;
+  document.getElementById('ph-val').textContent = s.ph.toFixed(1);
+}
+</script>
+{% endblock %}

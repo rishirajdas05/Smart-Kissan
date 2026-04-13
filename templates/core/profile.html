@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+
+<div class="page-header" style="background:linear-gradient(135deg,#1e1b4b,#3730a3,#4f46e5);">
+  <h1>👤 My Profile</h1>
+  <p>Manage your account information and farming preferences.</p>
+</div>
+
+{% if messages %}{% for msg in messages %}<div class="alert alert-success">{{ msg }}</div>{% endfor %}{% endif %}
+
+<div style="display:grid;grid-template-columns:300px 1fr;gap:24px;" class="profile-grid">
+
+<div>
+  <div class="card" style="text-align:center;padding:32px 24px;">
+    <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--green-500),var(--amber));display:flex;align-items:center;justify-content:center;font-size:2.5rem;font-weight:700;color:var(--green-900);margin:0 auto 16px;overflow:hidden;">
+      {% if prof.avatar %}
+        <img src="{{ prof.avatar.url }}" style="width:100%;height:100%;object-fit:cover;" alt="Avatar">
+      {% else %}
+        {{ user.first_name|first|upper|default:user.username|first|upper }}
+      {% endif %}
+    </div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--green-800);">
+      {{ user.get_full_name|default:user.username }}
+    </div>
+    <div style="color:var(--gray-400);font-size:.9rem;margin-top:4px;">@{{ user.username }}</div>
+    <div style="color:var(--gray-500);font-size:.85rem;margin-top:4px;">{{ user.email }}</div>
+    <div style="margin-top:16px;padding:10px;background:var(--green-50);border-radius:8px;">
+      <span class="badge badge-green">🌾 Smart-Kissan Member</span>
+    </div>
+    <div style="margin-top:12px;font-size:.8rem;color:var(--gray-400);">Joined {{ user.date_joined|date:"F Y" }}</div>
+  </div>
+
+  <div class="card" style="margin-top:16px;padding:20px;">
+    <div style="font-weight:700;color:var(--gray-700);margin-bottom:12px;">📊 My Stats</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;justify-content:space-between;">
+        <span style="color:var(--gray-600);font-size:.9rem;">🌾 Recommendations</span>
+        <span style="font-weight:700;color:var(--green-700);">{{ user.recommendations.count }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;">
+        <span style="color:var(--gray-600);font-size:.9rem;">🪸 Soil Analyses</span>
+        <span style="font-weight:700;color:var(--green-700);">{{ user.soil_analyses.count }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;">
+        <span style="color:var(--gray-600);font-size:.9rem;">📍 City</span>
+        <span style="font-weight:700;color:var(--green-700);">{{ prof.city|default:"Not set" }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><span style="font-size:1.4rem;">✏️</span><h3>Edit Profile</h3></div>
+  <div class="card-body">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div style="font-weight:600;color:var(--green-700);margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--green-100);">Personal Information</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="{{ user.email }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input type="text" name="phone" class="form-control" placeholder="+91 98765 43210" value="{{ prof.phone }}">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Profile Photo</label>
+        <input type="file" name="avatar" class="form-control" accept="image/*">
+      </div>
+
+      <div style="font-weight:600;color:var(--green-700);margin:20px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--green-100);">🌾 Farm Details</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">City</label>
+          <input type="text" name="city" class="form-control" placeholder="e.g. Indore" value="{{ prof.city }}">
+        </div>
+        <div class="form-group">
+          <label class="form-label">State</label>
+          <select name="state" class="form-control">
+            <option value="">Select State</option>
+            <option {% if prof.state == 'Madhya Pradesh'  %}selected{% endif %}>Madhya Pradesh</option>
+            <option {% if prof.state == 'Maharashtra'     %}selected{% endif %}>Maharashtra</option>
+            <option {% if prof.state == 'Uttar Pradesh'   %}selected{% endif %}>Uttar Pradesh</option>
+            <option {% if prof.state == 'Punjab'          %}selected{% endif %}>Punjab</option>
+            <option {% if prof.state == 'Haryana'         %}selected{% endif %}>Haryana</option>
+            <option {% if prof.state == 'Rajasthan'       %}selected{% endif %}>Rajasthan</option>
+            <option {% if prof.state == 'Gujarat'         %}selected{% endif %}>Gujarat</option>
+            <option {% if prof.state == 'Karnataka'       %}selected{% endif %}>Karnataka</option>
+            <option {% if prof.state == 'Tamil Nadu'      %}selected{% endif %}>Tamil Nadu</option>
+            <option {% if prof.state == 'Andhra Pradesh'  %}selected{% endif %}>Andhra Pradesh</option>
+            <option {% if prof.state == 'Telangana'       %}selected{% endif %}>Telangana</option>
+            <option {% if prof.state == 'Bihar'           %}selected{% endif %}>Bihar</option>
+            <option {% if prof.state == 'West Bengal'     %}selected{% endif %}>West Bengal</option>
+            <option {% if prof.state == 'Odisha'          %}selected{% endif %}>Odisha</option>
+            <option {% if prof.state == 'Jharkhand'       %}selected{% endif %}>Jharkhand</option>
+            <option {% if prof.state == 'Chhattisgarh'    %}selected{% endif %}>Chhattisgarh</option>
+            <option {% if prof.state == 'Himachal Pradesh'%}selected{% endif %}>Himachal Pradesh</option>
+            <option {% if prof.state == 'Uttarakhand'     %}selected{% endif %}>Uttarakhand</option>
+            <option {% if prof.state == 'Assam'           %}selected{% endif %}>Assam</option>
+            <option {% if prof.state == 'Kerala'          %}selected{% endif %}>Kerala</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Farm Size</label>
+          <select name="farm_size" class="form-control">
+            <option value="">Select Size</option>
+            <option {% if prof.farm_size == 'Less than 1 acre' %}selected{% endif %}>Less than 1 acre</option>
+            <option {% if prof.farm_size == '1-5 acres'        %}selected{% endif %}>1-5 acres</option>
+            <option {% if prof.farm_size == '5-10 acres'       %}selected{% endif %}>5-10 acres</option>
+            <option {% if prof.farm_size == '10-50 acres'      %}selected{% endif %}>10-50 acres</option>
+            <option {% if prof.farm_size == '50+ acres'        %}selected{% endif %}>50+ acres</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">About / Bio</label>
+        <textarea name="bio" class="form-control" rows="3" placeholder="Tell us about yourself and your farm...">{{ prof.bio }}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">💾 Save Changes</button>
+    </form>
+  </div>
+</div>
+</div>
+
+<style>@media(max-width:900px){.profile-grid{grid-template-columns:1fr!important;}}</style>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "recommender/base.html" %}
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="sk-auth">
+  <div class="sk-card sk-auth-card">
+    <h2>Sign Up</h2>
+    <p class="muted">Create your Smart-Kissan account.</p>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="sk-toast {{ message.tags }}" style="margin-bottom:14px;">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="post" class="sk-form">
+      {% csrf_token %}
+
+      <label>Username</label>
+      <input class="sk-input" name="username" placeholder="Choose a username">
+
+      <label>Email</label>
+      <input class="sk-input" name="email" placeholder="you@example.com" type="email">
+
+      <label>Password</label>
+      <input class="sk-input" name="password" placeholder="Create password" type="password">
+
+      <label>Confirm Password</label>
+      <input class="sk-input" name="confirm_password" placeholder="Confirm password" type="password">
+
+      <button class="sk-btn sk-btn-primary sk-btn-full" type="submit">Create Account</button>
+    </form>
+
+    <div class="sk-form-footer">
+      <span class="muted">Already have an account?</span>
+      <a href="{% url 'recommender:login' %}">Login</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .sk-auth {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 32px 16px;
+  }
+  .sk-auth-card {
+    width: 100%;
+    max-width: 480px;
+  }
+  .sk-auth-card h2 {
+    font-size: 26px;
+    font-weight: 800;
+    margin: 0 0 6px;
+    color: var(--text);
+  }
+  .sk-auth-card .muted {
+    margin-bottom: 22px;
+    display: block;
+    font-size: 14px;
+  }
+  .sk-form label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+  .sk-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(255,255,255,.07);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+    margin-bottom: 16px;
+  }
+  .sk-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(47,107,255,.18);
+  }
+  html[data-theme="light"] .sk-input {
+    background: rgba(0,0,0,.04);
+    color: var(--text);
+  }
+  .sk-btn-full {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 10px;
+    margin-top: 4px;
+  }
+  .sk-form-footer {
+    margin-top: 18px;
+    font-size: 14px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .sk-form-footer a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .sk-form-footer a:hover { text-decoration: underline; }
+</style>
+{% endblock %}

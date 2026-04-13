@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+{% block title %}All Crops{% endblock %}
+{% block content %}
+
+<div class="page-header" style="background:linear-gradient(135deg,#065f46,#047857,#059669);">
+  <h1>🌾 Crops Encyclopedia</h1>
+  <p>Explore all {{ crops|length }} crops in our AI model with detailed growing information.</p>
+</div>
+
+<!-- Search + Filter -->
+<div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;align-items:center;">
+  <input type="text" id="crop-search" class="form-control" placeholder="🔍 Search crops..."
+         style="max-width:280px;" oninput="filterCrops()">
+  <div style="display:flex;gap:6px;flex-wrap:wrap;">
+    <button onclick="filterSeason('all',this)"    class="btn btn-secondary season-btn active" style="padding:6px 14px;font-size:.82rem;">All</button>
+    <button onclick="filterSeason('Kharif',this)" class="btn btn-secondary season-btn"        style="padding:6px 14px;font-size:.82rem;">🌧 Kharif</button>
+    <button onclick="filterSeason('Rabi',this)"   class="btn btn-secondary season-btn"        style="padding:6px 14px;font-size:.82rem;">❄ Rabi</button>
+    <button onclick="filterSeason('Zaid',this)"   class="btn btn-secondary season-btn"        style="padding:6px 14px;font-size:.82rem;">🌞 Zaid</button>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:8px;">
+    <button onclick="setView('grid')"  class="btn btn-secondary" id="view-grid"  style="padding:8px 12px;">⊞ Grid</button>
+    <button onclick="setView('table')" class="btn btn-secondary" id="view-table" style="padding:8px 12px;">☰ Table</button>
+  </div>
+</div>
+
+<!-- MSP Chart -->
+<div class="card" style="margin-bottom:24px;">
+  <div class="card-header"><span>💰</span><h3>MSP Price Comparison (₹/quintal)</h3></div>
+  <div class="card-body" style="padding:20px;">
+    <div style="position:relative;height:300px;width:100%;">
+      <canvas id="msp-chart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Grid View -->
+<div id="grid-view" class="crops-grid">
+  {% for c in crops %}
+  <div class="crop-card" data-name="{{ c.name }}" data-season="{{ c.season }}" onclick="showModal('{{ c.name }}')">
+    <span class="crop-card-emoji">{{ c.emoji }}</span>
+    <div class="crop-card-name">{{ c.name|title }}</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">
+      <span class="badge badge-{% if 'Kharif' in c.season %}blue{% elif 'Rabi' in c.season %}amber{% elif 'Zaid' in c.season %}red{% else %}green{% endif %}" style="font-size:.75rem;">{{ c.season }}</span>
+      <span class="badge badge-gray" style="font-size:.75rem;">{{ c.water }} Water</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.85rem;color:var(--text2);">
+      <span>⏱ {{ c.time }}</span>
+      <span style="color:var(--green-400);font-weight:700;">₹{{ c.msp }}/qtl</span>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Table View -->
+<div id="table-view" style="display:none;">
+  <div class="card">
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr><th>Crop</th><th>Season</th><th>Water Need</th><th>Duration</th><th>MSP (₹/qtl)</th><th>Key Tips</th></tr>
+        </thead>
+        <tbody>
+          {% for c in crops %}
+          <tr class="table-crop-row" data-name="{{ c.name }}" data-season="{{ c.season }}">
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:1.4rem;">{{ c.emoji }}</span>
+                <span style="font-weight:700;color:var(--green-400);text-transform:capitalize;">{{ c.name }}</span>
+              </div>
+            </td>
+            <td><span class="badge badge-{% if 'Kharif' in c.season %}blue{% elif 'Rabi' in c.season %}amber{% elif 'Zaid' in c.season %}red{% else %}green{% endif %}">{{ c.season }}</span></td>
+            <td><span class="badge badge-gray">{{ c.water }}</span></td>
+            <td style="color:var(--text2);">{{ c.time }}</td>
+            <td style="font-weight:700;color:var(--green-400);font-family:'Space Mono';">₹{{ c.msp }}</td>
+            <td style="font-size:.85rem;color:var(--text3);">{{ c.tips.0|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="crop-modal" onclick="if(event.target===this)closeModal()"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
+            z-index:9999;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;
+              max-width:520px;width:100%;max-height:90vh;overflow-y:auto;
+              box-shadow:0 20px 60px rgba(0,0,0,.5);">
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+const cropsData = {
+  {% for c in crops %}
+  '{{ c.name }}': {
+    emoji: '{{ c.emoji }}',
+    name:  '{{ c.name|title }}',
+    season:'{{ c.season }}',
+    water: '{{ c.water }}',
+    time:  '{{ c.time }}',
+    msp:   {{ c.msp }},
+    tips:  [{% for t in c.tips %}'{{ t|escapejs }}',{% endfor %}]
+  },
+  {% endfor %}
+};
+
+const mspData = [{% for c in crops %}{name:'{{ c.name|title }}',msp:{{ c.msp }}},{% endfor %}]
+  .sort((a,b) => b.msp - a.msp).slice(0,15);
+
+// Use window.load so canvas has real dimensions
+window.addEventListener('load', function() {
+  const canvas = document.getElementById('msp-chart');
+  if (!canvas) return;
+
+  const dark      = document.documentElement.getAttribute('data-theme') !== 'light';
+  const tickColor = dark ? '#a8c4af' : '#374151';
+  const gridColor = dark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.07)';
+
+  new Chart(canvas.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: mspData.map(d => d.name),
+      datasets: [{
+        label: 'MSP (₹/qtl)',
+        data: mspData.map(d => d.msp),
+        backgroundColor: mspData.map((_,i) => `hsl(${140-i*6},70%,${58+i*1.5}%)`),
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 800 },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => ' ₹' + ctx.raw.toLocaleString() + '/qtl' }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: gridColor },
+          ticks: {
+            color: tickColor,
+            font: { size: 11 },
+            callback: v => '₹' + v.toLocaleString()
+          }
+        },
+        x: {
+          grid: { display: false },
+          ticks: {
+            color: tickColor,
+            font: { size: 11 },
+            maxRotation: 35,
+            minRotation: 35
+          }
+        }
+      }
+    }
+  });
+});
+
+function showModal(name) {
+  const c = cropsData[name];
+  if (!c) return;
+  const dark     = document.documentElement.getAttribute('data-theme') !== 'light';
+  const surface  = dark ? '#1e2e20' : '#ffffff';
+  const surface2 = dark ? '#253328' : '#f4fbf6';
+  const border   = dark ? '#2d4030' : '#c8e0ce';
+  const textMain = dark ? '#e8f5ed' : '#111827';
+  const textMuted= dark ? '#6b8f72' : '#6b7280';
+  const green    = dark ? '#52c275' : '#2d7d46';
+  const amber    = '#d97706';
+  const blue     = dark ? '#60a5fa' : '#1d4ed8';
+
+  document.getElementById('modal-content').innerHTML = `
+    <div style="padding:28px;background:${surface};border-radius:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;">
+        <div>
+          <div style="font-size:3rem;line-height:1;">${c.emoji}</div>
+          <div style="font-family:'Georgia',serif;font-size:1.6rem;font-weight:800;
+                      color:${green};margin-top:6px;">${c.name}</div>
+        </div>
+        <button onclick="closeModal()"
+          style="background:${surface2};border:1px solid ${border};width:36px;height:36px;
+                 border-radius:50%;cursor:pointer;font-size:1.1rem;color:${textMain};
+                 display:flex;align-items:center;justify-content:center;flex-shrink:0;">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;">
+        <div style="background:${surface2};border-radius:10px;padding:12px;text-align:center;border:1px solid ${border};">
+          <div style="font-size:.72rem;color:${textMuted};text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Season</div>
+          <div style="font-weight:700;color:${green};font-size:.9rem;">${c.season}</div>
+        </div>
+        <div style="background:${surface2};border-radius:10px;padding:12px;text-align:center;border:1px solid ${border};">
+          <div style="font-size:.72rem;color:${textMuted};text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Water</div>
+          <div style="font-weight:700;color:${amber};font-size:.9rem;">${c.water}</div>
+        </div>
+        <div style="background:${surface2};border-radius:10px;padding:12px;text-align:center;border:1px solid ${border};">
+          <div style="font-size:.72rem;color:${textMuted};text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Duration</div>
+          <div style="font-weight:700;color:${blue};font-size:.9rem;">${c.time}</div>
+        </div>
+      </div>
+      <div style="padding:14px 16px;background:rgba(245,158,11,.12);border-radius:10px;
+                  margin-bottom:18px;border:1px solid rgba(245,158,11,.25);">
+        <span style="font-weight:700;color:${amber};">💰 MSP:</span>
+        <span style="font-family:'Space Mono',monospace;font-size:1.1rem;color:${textMain};
+                     font-weight:700;margin-left:6px;">₹${c.msp.toLocaleString()}/quintal</span>
+      </div>
+      <div style="font-weight:700;color:${textMain};margin-bottom:12px;font-size:.95rem;">💡 Farming Tips</div>
+      <ul style="list-style:none;margin:0;padding:0;">
+        ${c.tips.map(t => `
+          <li style="padding:10px 0;border-bottom:1px solid ${border};font-size:.88rem;
+                     color:${textMain};display:flex;gap:8px;align-items:flex-start;">
+            <span style="color:${green};font-weight:700;flex-shrink:0;">→</span>
+            <span>${t}</span>
+          </li>`).join('')}
+      </ul>
+    </div>`;
+  document.getElementById('crop-modal').style.display = 'flex';
+}
+
+function closeModal() {
+  document.getElementById('crop-modal').style.display = 'none';
+}
+
+function filterCrops() {
+  const q = document.getElementById('crop-search').value.toLowerCase();
+  document.querySelectorAll('.crop-card,.table-crop-row').forEach(el => {
+    el.style.display = el.dataset.name.includes(q) ? '' : 'none';
+  });
+}
+
+function filterSeason(s, btn) {
+  document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.crop-card,.table-crop-row').forEach(el => {
+    const match = s === 'all' || (el.dataset.season || '').includes(s);
+    el.style.display = match ? '' : 'none';
+  });
+}
+
+function setView(v) {
+  document.getElementById('grid-view').style.display  = v === 'grid'  ? 'grid'  : 'none';
+  document.getElementById('table-view').style.display = v === 'table' ? 'block' : 'none';
+  document.getElementById('view-grid').style.fontWeight  = v === 'grid'  ? '700' : '';
+  document.getElementById('view-table').style.fontWeight = v === 'table' ? '700' : '';
+}
+</script>
+
+<style>
+.season-btn.active {
+  background: var(--green-600) !important;
+  color: white !important;
+  border-color: var(--green-600) !important;
+}
+</style>
+{% endblock %}

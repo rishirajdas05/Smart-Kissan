@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block title %}Auto Detection{% endblock %}
+{% block content %}
+
+<div class="page-header" style="background:linear-gradient(135deg,#1e3a5f,#0ea5e9);">
+  <h1>🤖 Auto Crop Detection</h1>
+  <p>Enter your city — we fetch live weather & soil data and recommend the top 3 crops.</p>
+</div>
+
+{% if error %}<div class="alert alert-error">❌ {{ error }}</div>{% endif %}
+
+<div style="display:grid;grid-template-columns:360px 1fr;gap:24px;" class="auto-grid">
+
+<!-- ── LEFT ── -->
+<div style="display:flex;flex-direction:column;gap:16px;">
+
+  <div class="card animate-slide-up">
+    <div class="card-header"><span style="font-size:1.3rem;">📍</span><h3>Enter Your City</h3></div>
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+          <label class="form-label">City Name</label>
+          <input type="text" name="city" class="form-control"
+                 placeholder="e.g. Indore, Bhopal, Mumbai"
+                 value="{{ city|default:'' }}" required autofocus>
+          <div class="form-hint">Enter any Indian city for best results</div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-full">🔍 Detect &amp; Recommend</button>
+      </form>
+      <div style="margin-top:14px;">
+        <div style="font-size:.78rem;color:var(--text3);margin-bottom:8px;">Popular cities:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <button onclick="setCity('Indore')"   class="btn btn-secondary" style="padding:4px 10px;font-size:.78rem;">Indore</button>
+          <button onclick="setCity('Bhopal')"   class="btn btn-secondary" style="padding:4px 10px;font-size:.78rem;">Bhopal</button>
+          <button onclick="setCity('Nagpur')"   class="btn btn-secondary" style="padding:4px 10px;font-size:.78rem;">Nagpur</button>
+          <button onclick="setCity('Pune')"     class="btn btn-secondary" style="padding:4px 10px;font-size:.78rem;">Pune</button>
+          <button onclick="setCity('Jaipur')"   class="btn btn-secondary" style="padding:4px 10px;font-size:.78rem;">Jaipur</button>
+          <button onclick="setCity('Lucknow')"  class="btn btn-secondary" style="padding:4px 10px;font-size:.78rem;">Lucknow</button>
+          <button onclick="setCity('Delhi')"    class="btn btn-secondary" style="padding:4px 10px;font-size:.78rem;">Delhi</button>
+          <button onclick="setCity('Mumbai')"   class="btn btn-secondary" style="padding:4px 10px;font-size:.78rem;">Mumbai</button>
+          <button onclick="setCity('Gwalior')"  class="btn btn-secondary" style="padding:4px 10px;font-size:.78rem;">Gwalior</button>
+          <button onclick="setCity('Amritsar')" class="btn btn-secondary" style="padding:4px 10px;font-size:.78rem;">Amritsar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if submitted and weather %}
+  <div class="weather-widget animate-slide-up">
+    <div style="font-size:.82rem;opacity:.7;margin-bottom:6px;">📍 Live Weather — {{ weather.city }}</div>
+    <div class="weather-temp">{{ weather.temp }}°C</div>
+    <div class="weather-desc">{{ weather.description }}</div>
+    <div class="weather-stats">
+      <div class="weather-stat"><div class="label">Humidity</div><div class="value">{{ weather.humidity }}%</div></div>
+      <div class="weather-stat"><div class="label">Wind</div><div class="value">{{ weather.wind }} km/h</div></div>
+      <div class="weather-stat"><div class="label">Pressure</div><div class="value">{{ weather.pressure }} hPa</div></div>
+    </div>
+    {% if weather.demo %}<div style="margin-top:10px;font-size:.72rem;opacity:.4;text-align:center;">Demo data — real weather loads with valid API key</div>{% endif %}
+  </div>
+
+  <div class="card animate-slide-up">
+    <div class="card-header"><span>🪸</span><h3>Soil Profile — {{ city|title }}</h3></div>
+    <div class="card-body" style="padding:14px 18px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+        <span style="color:var(--text2);font-size:.88rem;">🌱 Nitrogen (N)</span>
+        <span style="font-weight:700;color:var(--green-400);font-family:'Space Mono';">{{ soil.N }} kg/ha</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+        <span style="color:var(--text2);font-size:.88rem;">⚗️ Phosphorus (P)</span>
+        <span style="font-weight:700;color:var(--green-400);font-family:'Space Mono';">{{ soil.P }} kg/ha</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+        <span style="color:var(--text2);font-size:.88rem;">🔥 Potassium (K)</span>
+        <span style="font-weight:700;color:var(--green-400);font-family:'Space Mono';">{{ soil.K }} kg/ha</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+        <span style="color:var(--text2);font-size:.88rem;">🧪 pH Level</span>
+        <span style="font-weight:700;color:var(--green-400);font-family:'Space Mono';">{{ soil.ph }}</span>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- ── RIGHT: all 3 results ── -->
+<div>
+{% if submitted %}
+<div class="animate-slide-up">
+  <div style="margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+    <span style="font-size:1.1rem;">🏆</span>
+    <span style="font-weight:700;color:var(--text);font-size:1rem;">Top 3 Crops for {{ city|title }}</span>
+    <span class="badge badge-blue">Auto Detected</span>
+  </div>
+
+  {% for r in results %}
+  <div class="result-card {% if not forloop.first %}alt{% endif %}" style="margin-bottom:20px;">
+
+    <div class="result-card-header">
+      <div>
+        <div style="font-size:.73rem;font-weight:700;opacity:.75;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">
+          {% if forloop.first %}🥇 Best Match for {{ city|title }}{% elif forloop.counter == 2 %}🥈 Alternative #2{% else %}🥉 Alternative #3{% endif %}
+        </div>
+        <div class="result-crop-name">{{ r.info.emoji|default:'🌱' }} {{ r.crop|title }}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:2rem;font-weight:700;font-family:'Space Mono',monospace;
+                    color:{% if forloop.first %}var(--amber-light){% else %}var(--green-300){% endif %};">
+          {{ r.confidence }}%
+        </div>
+        <div style="font-size:.73rem;opacity:.7;">AI Confidence</div>
+      </div>
+    </div>
+
+    <div class="result-card-body">
+      <div class="confidence-bar">
+        <div class="confidence-fill" style="width:{{ r.confidence }}%"></div>
+      </div>
+
+      <div class="result-meta-grid">
+        <div class="result-meta-item">
+          <div class="label">🗓 Season</div>
+          <div class="value">{{ r.info.season|default:"—" }}</div>
+        </div>
+        <div class="result-meta-item">
+          <div class="label">💧 Water Need</div>
+          <div class="value">{{ r.info.water|default:"—" }}</div>
+        </div>
+        <div class="result-meta-item">
+          <div class="label">⏱ Duration</div>
+          <div class="value">{{ r.info.time|default:"—" }}</div>
+        </div>
+      </div>
+
+      <div class="tips-section">
+        <div class="tips-section-title">💡 Farming Tips & Essentials for {{ city|title }}</div>
+        <ul class="tips-list">
+          {% for tip in r.info.tips %}
+          <li><span style="color:var(--green-400);">→</span> {{ tip }}</li>
+          {% empty %}
+          <li>No specific tips available.</li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div class="msp-badge">
+        <span style="font-size:1.3rem;">💰</span>
+        <div>
+          <div class="label">Government MSP Price</div>
+          <div class="val">₹{{ r.msp }}<span style="font-size:.75rem;font-weight:400;"> /quintal</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% else %}
+<div class="card" style="display:flex;align-items:center;justify-content:center;min-height:420px;">
+  <div style="text-align:center;color:var(--text3);padding:40px;">
+    <div style="font-size:4rem;margin-bottom:16px;opacity:.35;">🤖</div>
+    <div style="font-size:1.05rem;font-weight:600;margin-bottom:8px;color:var(--text2);">Enter a city to get started</div>
+    <div style="font-size:.88rem;">We'll fetch live weather and soil data,<br>then show the top 3 crops with full growing tips.</div>
+  </div>
+</div>
+{% endif %}
+</div>
+
+</div>
+<style>@media(max-width:960px){.auto-grid{grid-template-columns:1fr!important;}}</style>
+<script>
+function setCity(c) { document.querySelector('[name=city]').value = c; }
+</script>
+{% endblock %}

@@ -1,0 +1,355 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Access your dashboard and history."
+msgstr "डैशबोर्ड और इतिहास देखें।"
+
+msgid "Add crops from /admin for richer UI."
+msgstr "/admin से फसल जोड़ें ताकि UI बेहतर हो।"
+
+msgid "Add crops from the admin panel (optional)."
+msgstr "एडमिन पैनल से फसलें जोड़ें (वैकल्पिक)।"
+
+msgid "All seasons"
+msgstr "सभी मौसम"
+
+msgid "All your previous crop recommendations."
+msgstr "आपकी सभी पुरानी सिफारिशें।"
+
+msgid "Already have an account?"
+msgstr "पहले से खाता है?"
+
+msgid "Analytics of your recommendations and price predictions."
+msgstr "सिफारिश और कीमत पूर्वानुमान का विश्लेषण।"
+
+msgid "Auto"
+msgstr "ऑटो"
+
+msgid "Auto Crop Recommendation"
+msgstr "ऑटो फसल सिफारिश"
+
+msgid "Auto Recommendation"
+msgstr "ऑटो सिफारिश"
+
+msgid "Browse crop details (optional content added via admin)."
+msgstr "फसल विवरण देखें (एडमिन से वैकल्पिक सामग्री)।"
+
+msgid "Built with Django + ML"
+msgstr "Django + ML से बनाया गया"
+
+msgid "Choose Manual mode for full NPK inputs, or Auto mode to fetch weather automatically using your city. Track everything in your farmer dashboard."
+msgstr "पूरे NPK इनपुट के लिए मैनुअल मोड चुनें, या शहर के आधार पर मौसम अपने आप लाने के लिए ऑटो मोड। किसान डैशबोर्ड में सब ट्रैक करें।"
+
+msgid "Confidence"
+msgstr "विश्वास स्तर"
+
+msgid "Create account"
+msgstr "खाता बनाएं"
+
+msgid "Create one"
+msgstr "बनाएँ"
+
+msgid "Crop"
+msgstr "फसल"
+
+msgid "Crop Price Prediction"
+msgstr "फसल कीमत पूर्वानुमान"
+
+msgid "Crop details"
+msgstr "फसल विवरण"
+
+msgid "Crops"
+msgstr "फसलें"
+
+msgid "Dashboard"
+msgstr "डैशबोर्ड"
+
+msgid "Dashboard + Price Prediction"
+msgstr "डैशबोर्ड + कीमत पूर्वानुमान"
+
+msgid "Date"
+msgstr "तारीख"
+
+msgid "Description"
+msgstr "विवरण"
+
+msgid "Enter N, P, K, temperature, humidity, pH, rainfall"
+msgstr "N, P, K, तापमान, आर्द्रता, pH, वर्षा दर्ज करें"
+
+msgid "Enter your city. Weather is fetched automatically using OpenWeather."
+msgstr "अपना शहर दर्ज करें। OpenWeather से मौसम अपने आप मिलेगा।"
+
+msgid "Farmer Dashboard"
+msgstr "किसान डैशबोर्ड"
+
+msgid "Featured Crops"
+msgstr "चयनित फसलें"
+
+msgid "Fertilizer"
+msgstr "उर्वरक"
+
+msgid "Fertilizer tips"
+msgstr "उर्वरक सुझाव"
+
+msgid "Fetch Weather + Recommend"
+msgstr "मौसम लाएँ + सुझाव दें"
+
+msgid "Fill all fields (N, P, K + climate + soil) to get the best crop suggestion."
+msgstr "सर्वश्रेष्ठ सुझाव के लिए सभी फ़ील्ड भरें (N, P, K + मौसम + मिट्टी)।"
+
+msgid "For Auto mode, you only need City + Country."
+msgstr "ऑटो मोड में केवल शहर + देश।"
+
+msgid "Go Home"
+msgstr "होम जाएँ"
+
+msgid "Growing Tips"
+msgstr "उगाने के सुझाव"
+
+msgid "Help"
+msgstr "सहायता"
+
+msgid "Hi"
+msgstr "नमस्ते"
+
+msgid "Historical prices (sample / imported)"
+msgstr "ऐतिहासिक कीमतें (सैंपल/इम्पोर्टेड)"
+
+msgid "History"
+msgstr "इतिहास"
+
+msgid "Home"
+msgstr "होम"
+
+msgid "How Auto mode works"
+msgstr "ऑटो मोड कैसे काम करता है"
+
+msgid "Humidity"
+msgstr "आर्द्रता"
+
+msgid "Humidity (%)"
+msgstr "आर्द्रता (%)"
+
+msgid "Inputs (NPK + Weather + pH)"
+msgstr "इनपुट (NPK + मौसम + pH)"
+
+msgid "Inputs used"
+msgstr "प्रयुक्त इनपुट"
+
+msgid "Last Crop"
+msgstr "पिछली फसल"
+
+msgid "Location"
+msgstr "स्थान"
+
+msgid "Login"
+msgstr "लॉगिन"
+
+msgid "Logout"
+msgstr "लॉगआउट"
+
+msgid "Manual"
+msgstr "मैनुअल"
+
+msgid "Manual Crop Recommendation"
+msgstr "मैनुअल फसल सिफारिश"
+
+msgid "Manual Recommendation"
+msgstr "मैनुअल सिफारिश"
+
+msgid "Mode"
+msgstr "मोड"
+
+msgid "Modes"
+msgstr "मोड"
+
+msgid "Month"
+msgstr "महीना"
+
+msgid "New Auto"
+msgstr "नई ऑटो"
+
+msgid "New Manual"
+msgstr "नई मैनुअल"
+
+msgid "New Price Prediction"
+msgstr "नई कीमत भविष्यवाणी"
+
+msgid "No account?"
+msgstr "खाता नहीं है?"
+
+msgid "No crops added yet"
+msgstr "अभी कोई फसल नहीं जोड़ी गई"
+
+msgid "No description available."
+msgstr "विवरण उपलब्ध नहीं।"
+
+msgid "No description yet."
+msgstr "अभी विवरण नहीं।"
+
+msgid "No history yet. Make a recommendation first."
+msgstr "अभी इतिहास नहीं। पहले सिफारिश करें।"
+
+msgid "No price predictions yet."
+msgstr "अभी कोई कीमत भविष्यवाणी नहीं।"
+
+msgid "Open Dashboard"
+msgstr "डैशबोर्ड खोलें"
+
+msgid "Output"
+msgstr "आउटपुट"
+
+msgid "Overview"
+msgstr "परिचय"
+
+msgid "P and K use safe defaults unless you connect an NPK API or sensors."
+msgstr "NPK API/सेंसर न हो तो P और K डिफ़ॉल्ट।"
+
+msgid "Page not found."
+msgstr "पेज नहीं मिला।"
+
+msgid "Predict Crop Price"
+msgstr "फसल की कीमत बताएं"
+
+msgid "Predict INR/quintal using month & year"
+msgstr "महीना और वर्ष से INR/क्विंटल बताएं"
+
+msgid "Predict Price"
+msgstr "कीमत बताएं"
+
+msgid "Predict price (INR/quintal) using crop + month + year. For better accuracy, replace the sample dataset with real mandi price data."
+msgstr "फसल + महीना + वर्ष से INR/क्विंटल कीमत बताएं। बेहतर सटीकता के लिए सैंपल डेटा को असली मंडी डेटा से बदलें।"
+
+msgid "Predicted Price (INR/quintal)"
+msgstr "अनुमानित कीमत (INR/क्विंटल)"
+
+msgid "Price"
+msgstr "कीमत"
+
+msgid "Quick Links"
+msgstr "त्वरित लिंक"
+
+msgid "Rain (mm)"
+msgstr "वर्षा (mm)"
+
+msgid "Rainfall"
+msgstr "वर्षा"
+
+msgid "Rainfall is in mm (use recent or seasonal estimate)."
+msgstr "वर्षा mm में है (हालिया/मौसमी अनुमान)।"
+
+msgid "Recent Price Predictions"
+msgstr "हाल की कीमत भविष्यवाणियाँ"
+
+msgid "Recommend Crop"
+msgstr "फसल सुझाएँ"
+
+msgid "Recommendation Result"
+msgstr "सिफारिश परिणाम"
+
+msgid "Recommendations (Last 14 Days)"
+msgstr "सिफारिशें (पिछले 14 दिन)"
+
+msgid "Recommended Crop"
+msgstr "सुझाई गई फसल"
+
+msgid "Required"
+msgstr "आवश्यक"
+
+msgid "Result"
+msgstr "परिणाम"
+
+msgid "Run: python manage.py import_price_data to load sample history into DB."
+msgstr "DB में सैंपल लोड करने के लिए चलाएँ: python manage.py import_price_data"
+
+msgid "Season"
+msgstr "मौसम"
+
+msgid "Send feedback or questions"
+msgstr "फीडबैक या सवाल भेजें"
+
+msgid "Send us your message. We'll use it to improve the system."
+msgstr "हमें संदेश भेजें। हम सिस्टम सुधारने में उपयोग करेंगे।"
+
+msgid "Set OPENWEATHER_API_KEY in your .env file."
+msgstr "अपनी .env फ़ाइल में OPENWEATHER_API_KEY सेट करें।"
+
+msgid "Sign up"
+msgstr "साइन अप"
+
+msgid "Sign up to save history and analytics."
+msgstr "इतिहास और एनालिटिक्स सेव करने के लिए साइन अप करें।"
+
+msgid "Smart Crop Recommendation + Weather + Prices"
+msgstr "स्मार्ट फसल सिफारिश + मौसम + कीमतें"
+
+msgid "Soil"
+msgstr "मिट्टी"
+
+msgid "Soil Type"
+msgstr "मिट्टी का प्रकार"
+
+msgid "Start Manual"
+msgstr "मैनुअल शुरू करें"
+
+msgid "Submit"
+msgstr "जमा करें"
+
+msgid "Submit the form to see predicted price."
+msgstr "अनुमान देखने के लिए फ़ॉर्म सबमिट करें।"
+
+msgid "Support"
+msgstr "सपोर्ट"
+
+msgid "Support / Feedback"
+msgstr "सहायता / फीडबैक"
+
+msgid "Switch to Auto"
+msgstr "ऑटो पर जाएँ"
+
+msgid "Temp"
+msgstr "तापमान"
+
+msgid "Temp (°C)"
+msgstr "तापमान (°C)"
+
+msgid "Temperature, humidity and rain are fetched from OpenWeather."
+msgstr "तापमान, आर्द्रता और वर्षा OpenWeather से आते हैं।"
+
+msgid "Tip"
+msgstr "टिप"
+
+msgid "Tips"
+msgstr "टिप्स"
+
+msgid "Top Crops"
+msgstr "शीर्ष फसलें"
+
+msgid "Total Recommendations"
+msgstr "कुल सिफारिशें"
+
+msgid "Try Auto (Weather)"
+msgstr "ऑटो (मौसम) आज़माएँ"
+
+msgid "Use soil lab report values for NPK if available."
+msgstr "यदि हो तो NPK के लिए मिट्टी लैब रिपोर्ट का उपयोग करें।"
+
+msgid "View all"
+msgstr "सब देखें"
+
+msgid "Weather"
+msgstr "मौसम"
+
+msgid "Weather via OpenWeather API + soil estimate"
+msgstr "OpenWeather API से मौसम + मिट्टी अनुमान"
+
+msgid "Your Recommendation History"
+msgstr "आपका सिफारिश इतिहास"
+
+msgid "e.g., rice"
+msgstr "जैसे, चावल"
+
+msgid "pH and N are optionally estimated using SoilGrids (if available)."
+msgstr "pH और N (यदि उपलब्ध) SoilGrids से अनुमानित।"

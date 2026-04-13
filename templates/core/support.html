@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block title %}Support{% endblock %}
+{% block content %}
+
+<div class="page-header" style="background:linear-gradient(135deg,#1e3a5f,#155e75,#0e7490);">
+  <h1>💬 Support Center</h1>
+  <p>Need help? Reach out to us and we'll respond within 24 hours.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 380px;gap:24px;" class="support-grid">
+
+<!-- ── Contact Form ── -->
+<div class="card animate-slide-up">
+  <div class="card-header"><span style="font-size:1.4rem;">📝</span><h3>Send Us a Message</h3></div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input type="text" name="name" class="form-control" placeholder="Full name"
+                 value="{{ user.get_full_name|default:user.username }}" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" name="email" class="form-control" placeholder="you@example.com"
+                 value="{{ user.email }}" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <select name="subject" class="form-control">
+          <option>General Query</option>
+          <option>Bug Report</option>
+          <option>Crop Recommendation Issue</option>
+          <option>API / Weather Data Issue</option>
+          <option>Account Problem</option>
+          <option>Feature Request</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea name="message" class="form-control" rows="6"
+                  placeholder="Describe your issue or question in detail..." required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg">📨 Send Message</button>
+    </form>
+  </div>
+</div>
+
+<!-- ── Right panel ── -->
+<div>
+  <!-- Contact Info -->
+  <div class="card animate-slide-up" style="margin-bottom:16px;">
+    <div class="card-header"><span style="font-size:1.3rem;">📬</span><h3>Contact Information</h3></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
+
+      <div style="display:flex;align-items:center;gap:12px;padding:14px;
+                  background:rgba(58,156,87,.1);border:1px solid rgba(58,156,87,.2);
+                  border-radius:10px;">
+        <span style="font-size:1.5rem;flex-shrink:0;">📧</span>
+        <div>
+          <div style="font-weight:700;font-size:.9rem;color:var(--text);">Email Support</div>
+          <div style="font-size:.85rem;color:var(--text2);margin-top:2px;">support@smartkissan.in</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:14px;
+                  background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);
+                  border-radius:10px;">
+        <span style="font-size:1.5rem;flex-shrink:0;">📞</span>
+        <div>
+          <div style="font-weight:700;font-size:.9rem;color:var(--text);">Helpline</div>
+          <div style="font-size:.85rem;color:var(--text2);margin-top:2px;">1800-XXX-XXXX (Toll Free)</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:14px;
+                  background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.2);
+                  border-radius:10px;">
+        <span style="font-size:1.5rem;flex-shrink:0;">🕐</span>
+        <div>
+          <div style="font-weight:700;font-size:.9rem;color:var(--text);">Response Time</div>
+          <div style="font-size:.85rem;color:var(--text2);margin-top:2px;">Within 24 hours</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div class="card animate-slide-up">
+    <div class="card-header"><span style="font-size:1.3rem;">❓</span><h3>Frequently Asked Questions</h3></div>
+    <div class="card-body" style="padding:0 20px;">
+
+      <div class="faq-item" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;" onclick="toggleFaq(this)">
+          <span style="font-weight:600;font-size:.9rem;color:var(--text);padding-right:12px;">How accurate are the crop recommendations?</span>
+          <span style="color:var(--green-400);font-size:1.1rem;flex-shrink:0;">+</span>
+        </div>
+        <div class="faq-ans" style="display:none;margin-top:8px;font-size:.85rem;color:var(--text2);line-height:1.6;">
+          Our Random Forest AI model is trained on real agronomic data for 119 crops with feature engineering, achieving strong accuracy for Indian soil and climate conditions.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;" onclick="toggleFaq(this)">
+          <span style="font-weight:600;font-size:.9rem;color:var(--text);padding-right:12px;">Can I use Smart-Kissan for any state in India?</span>
+          <span style="color:var(--green-400);font-size:1.1rem;flex-shrink:0;">+</span>
+        </div>
+        <div class="faq-ans" style="display:none;margin-top:8px;font-size:.85rem;color:var(--text2);line-height:1.6;">
+          Yes! We support all major Indian cities and states. The Auto Detect feature also applies regional bias — coastal, hilly, arid and tropical-wet zones get region-specific recommendations.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;" onclick="toggleFaq(this)">
+          <span style="font-weight:600;font-size:.9rem;color:var(--text);padding-right:12px;">How is Auto Detect different from Manual?</span>
+          <span style="color:var(--green-400);font-size:1.1rem;flex-shrink:0;">+</span>
+        </div>
+        <div class="faq-ans" style="display:none;margin-top:8px;font-size:.85rem;color:var(--text2);line-height:1.6;">
+          Auto Detect fetches live weather and estimates regional soil data from your city name. Manual mode lets you enter your own precise soil measurements for more accurate results.
+        </div>
+      </div>
+
+      <div class="faq-item" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;" onclick="toggleFaq(this)">
+          <span style="font-weight:600;font-size:.9rem;color:var(--text);padding-right:12px;">How do I get my OpenWeatherMap API key?</span>
+          <span style="color:var(--green-400);font-size:1.1rem;flex-shrink:0;">+</span>
+        </div>
+        <div class="faq-ans" style="display:none;margin-top:8px;font-size:.85rem;color:var(--text2);line-height:1.6;">
+          Visit openweathermap.org, sign up for free, go to the API Keys section and copy your key. Paste it in <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;font-size:.82rem;">settings.py</code> as <code style="background:var(--bg3);padding:2px 6px;border-radius:4px;font-size:.82rem;">OPENWEATHER_API_KEY</code>.
+        </div>
+      </div>
+
+      <div class="faq-item" style="padding:14px 0;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:center;" onclick="toggleFaq(this)">
+          <span style="font-weight:600;font-size:.9rem;color:var(--text);padding-right:12px;">What crops does Smart-Kissan support?</span>
+          <span style="color:var(--green-400);font-size:1.1rem;flex-shrink:0;">+</span>
+        </div>
+        <div class="faq-ans" style="display:none;margin-top:8px;font-size:.85rem;color:var(--text2);line-height:1.6;">
+          We support 119 crops including cereals, pulses, oilseeds, vegetables, fruits, plantation crops, spices, flowers and medicinal plants. Visit the All Crops page to explore the full list.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<style>
+@media(max-width:900px){ .support-grid{ grid-template-columns:1fr!important; } }
+</style>
+
+<script>
+function toggleFaq(el) {
+  const ans  = el.nextElementSibling;
+  const icon = el.querySelector('span:last-child');
+  const open = ans.style.display !== 'none';
+  ans.style.display = open ? 'none' : 'block';
+  icon.textContent  = open ? '+' : '−';
+}
+</script>
+{% endblock %}

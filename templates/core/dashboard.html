@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<div class="page-header" style="background:linear-gradient(135deg,#312e81,#4338ca,#6366f1);">
+  <h1>📊 My Dashboard</h1>
+  <p>Track your activity, crop recommendations, and usage analytics.</p>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card animate-slide-up">
+    <div class="stat-icon green">🌾</div>
+    <div><div class="stat-number">{{ total_recs }}</div><div class="stat-label">Total Recommendations</div></div>
+  </div>
+  <div class="stat-card animate-slide-up">
+    <div class="stat-icon blue">📱</div>
+    <div><div class="stat-number">{{ total_activities }}</div><div class="stat-label">Page Visits</div></div>
+  </div>
+  <div class="stat-card animate-slide-up">
+    <div class="stat-icon amber">✏️</div>
+    <div><div class="stat-number">{{ manual_count }}</div><div class="stat-label">Manual Recommendations</div></div>
+  </div>
+  <div class="stat-card animate-slide-up">
+    <div class="stat-icon red">🤖</div>
+    <div><div class="stat-number">{{ auto_count }}</div><div class="stat-label">Auto Recommendations</div></div>
+  </div>
+  <div class="stat-card animate-slide-up">
+    <div class="stat-icon green">🪸</div>
+    <div><div class="stat-number">{{ soil_analyses }}</div><div class="stat-label">Soil Analyses</div></div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="charts-grid">
+  <div class="card">
+    <div class="card-header"><span>📅</span><h3>Weekly Activity</h3></div>
+    <div class="card-body">
+      <div class="chart-container" style="position:relative;height:220px;">
+        <canvas id="weekly-chart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span>🌾</span><h3>Most Recommended Crops</h3></div>
+    <div class="card-body">
+      <div class="chart-container" style="position:relative;height:220px;">
+        <canvas id="crops-chart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span>📄</span><h3>Pages Visited</h3></div>
+    <div class="card-body">
+      <div class="chart-container" style="position:relative;height:220px;">
+        <canvas id="pages-chart"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span>⚖️</span><h3>Recommendation Method</h3></div>
+    <div class="card-body" style="display:flex;align-items:center;justify-content:center;">
+      <div style="position:relative;height:220px;width:220px;">
+        <canvas id="method-chart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Recommendations Table -->
+<div class="card" style="margin-top:24px;">
+  <div class="card-header"><span>📋</span><h3>Recent Recommendations</h3>
+    <a href="{% url 'manual' %}" class="btn btn-primary" style="margin-left:auto;padding:6px 14px;font-size:.82rem;">+ New</a>
+  </div>
+  {% if recs %}
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Crop</th><th>Method</th><th>City</th><th>N</th><th>P</th><th>K</th><th>pH</th><th>Temp</th><th>PDF</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for r in recs %}
+        <tr>
+          <td style="color:var(--text3);">{{ forloop.counter }}</td>
+          <td><span style="font-weight:700;color:var(--green-400);text-transform:capitalize;">{{ r.crop_name }}</span></td>
+          <td>
+            <span class="badge {% if r.method == 'manual' %}badge-amber{% else %}badge-blue{% endif %}">
+              {% if r.method == 'manual' %}✏️ Manual{% else %}🤖 Auto{% endif %}
+            </span>
+          </td>
+          <td style="color:var(--text2);">{{ r.city|default:"—" }}</td>
+          <td style="color:var(--text2);">{{ r.nitrogen|floatformat:0|default:"—" }}</td>
+          <td style="color:var(--text2);">{{ r.phosphorus|floatformat:0|default:"—" }}</td>
+          <td style="color:var(--text2);">{{ r.potassium|floatformat:0|default:"—" }}</td>
+          <td style="color:var(--text2);">{{ r.ph|floatformat:1|default:"—" }}</td>
+          <td style="color:var(--text2);">{{ r.temperature|floatformat:1|default:"—" }}°C</td>
+          <td>
+            <a href="{% url 'export_pdf' r.id %}"
+               style="font-size:.78rem;color:var(--green-400);text-decoration:none;
+                      padding:3px 8px;border:1px solid var(--green-600);border-radius:6px;">
+              📄 PDF
+            </a>
+          </td>
+          <td style="color:var(--text3);font-size:.82rem;">{{ r.timestamp|date:"d M, H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="card-body" style="text-align:center;padding:48px;color:var(--text3);">
+    <div style="font-size:3rem;margin-bottom:12px;">🌱</div>
+    <div style="font-size:1rem;font-weight:600;color:var(--text2);">No recommendations yet</div>
+    <div style="font-size:.9rem;margin-top:4px;">
+      Start with <a href="{% url 'manual' %}" style="color:var(--green-400);">Manual</a>
+      or <a href="{% url 'auto' %}" style="color:var(--green-400);">Auto Detect</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+const weeklyData = {{ weekly_json|safe }};
+const cropData   = {{ crop_json|safe }};
+const pageData   = {{ page_json|safe }};
+const manualCount = {{ manual_count }};
+const autoCount   = {{ auto_count }};
+
+const COLORS = ['#52c275','#f59e0b','#0ea5e9','#8b5cf6','#ef4444','#ec4899','#14b8a6','#f97316','#6366f1','#84cc16'];
+const dark = document.documentElement.getAttribute('data-theme') !== 'light';
+const tickColor = dark ? '#a8c4af' : '#374151';
+const gridColor = dark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.06)';
+
+window.addEventListener('load', function() {
+
+  // 1. Weekly Activity Line chart
+  new Chart(document.getElementById('weekly-chart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: weeklyData.map(d => d.day),
+      datasets: [{
+        label: 'Activity',
+        data: weeklyData.map(d => d.count),
+        borderColor: '#52c275',
+        backgroundColor: 'rgba(82,194,117,.12)',
+        fill: true, tension: 0.4,
+        pointBackgroundColor: '#52c275',
+        pointRadius: 5, pointHoverRadius: 7
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, color: tickColor }, grid: { color: gridColor } },
+        x: { ticks: { color: tickColor }, grid: { display: false } }
+      }
+    }
+  });
+
+  // 2. Top Crops Bar chart
+  const cropCanvas = document.getElementById('crops-chart');
+  if (cropData.length) {
+    new Chart(cropCanvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: cropData.map(d => d.crop),
+        datasets: [{
+          label: 'Times Recommended',
+          data: cropData.map(d => d.count),
+          backgroundColor: COLORS,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { stepSize: 1, color: tickColor }, grid: { color: gridColor } },
+          x: { ticks: { color: tickColor }, grid: { display: false } }
+        }
+      }
+    });
+  } else {
+    cropCanvas.parentElement.innerHTML =
+      '<div style="text-align:center;padding:60px 20px;color:var(--text3);">🌾<br>Make recommendations to see data</div>';
+  }
+
+  // 3. Pages Doughnut chart
+  const pageCanvas = document.getElementById('pages-chart');
+  if (pageData.length) {
+    new Chart(pageCanvas.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: pageData.map(d => d.page),
+        datasets: [{
+          data: pageData.map(d => d.count),
+          backgroundColor: COLORS,
+          borderWidth: 2,
+          borderColor: dark ? '#1e2e20' : '#ffffff'
+        }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'right',
+            labels: { color: tickColor, font: { size: 11 }, padding: 10 }
+          }
+        }
+      }
+    });
+  } else {
+    pageCanvas.parentElement.innerHTML =
+      '<div style="text-align:center;padding:60px 20px;color:var(--text3);">📄<br>Visit pages to see data</div>';
+  }
+
+  // 4. Method Pie chart
+  new Chart(document.getElementById('method-chart').getContext('2d'), {
+    type: 'pie',
+    data: {
+      labels: ['Manual', 'Auto'],
+      datasets: [{
+        data: [manualCount || 0, autoCount || 0],
+        backgroundColor: ['#f59e0b', '#0ea5e9'],
+        borderWidth: 2,
+        borderColor: dark ? '#1e2e20' : '#ffffff'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: tickColor, font: { size: 11 }, padding: 12 }
+        }
+      }
+    }
+  });
+});
+</script>
+{% endblock %}

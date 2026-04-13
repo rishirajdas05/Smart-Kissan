@@ -1,0 +1,36 @@
+# API Keys and secrets — NEVER push these
+.env
+.env.local
+.env.production
+
+# ML model files (retrained on deploy)
+core/ml_models/*.pkl
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

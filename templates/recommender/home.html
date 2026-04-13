@@ -1,0 +1,66 @@
+{% extends "recommender/base.html" %}
+{% block content %}
+
+<div class="sk-container sk-main">
+
+  <div class="sk-hero">
+    <!-- LEFT HERO -->
+    <div class="sk-card sk-hero-left">
+      <h1>Welcome to Smart-<br>Kissan</h1>
+      <p class="muted">
+        Get crop recommendations using soil + weather signals. Manual and Auto both
+        provide essentials & tips after prediction.
+      </p>
+
+      <div class="sk-row" style="margin-top:14px;">
+        <a class="sk-btn sk-btn-primary" href="{% url 'recommender:manual' %}">Manual Recommendation</a>
+        <a class="sk-btn" href="{% url 'recommender:auto' %}">Auto by City</a>
+        <a class="sk-btn" href="{% url 'recommender:price' %}">Check Prices</a>
+      </div>
+    </div>
+
+    <!-- RIGHT HERO -->
+    <div class="sk-card sk-hero-right">
+      <h3>How it works</h3>
+      <ul class="sk-bullets">
+        <li><b>Manual:</b> Enter NPK + weather + pH + rainfall → get top crops with score, tips & essentials.</li>
+        <li><b>Auto:</b> Enter multiple cities → each city gets live weather + recommendations.</li>
+        <li><b>Crops Library:</b> Full crop list with suitability ranges + search.</li>
+        <li><b>Dashboard:</b> Better crop popularity chart from your recent activity.</li>
+        <li><b>Prices:</b> Crop + mandi lookup (demo estimate, can connect real API later).</li>
+      </ul>
+
+      <div class="sk-row sk-row-end" style="margin-top:18px;">
+        <a class="sk-btn sk-btn-ghost" href="{% url 'recommender:signup' %}">Create Account</a>
+        <a class="sk-btn sk-btn-primary" href="{% url 'recommender:login' %}">Login</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="sk-section sk-cards-grid">
+    <div class="sk-card">
+      <div class="sk-card-head">
+        <h3>Accurate Suggestions</h3>
+      </div>
+      <p class="muted">Recommendations scored against crop suitability ranges.</p>
+    </div>
+
+    <div class="sk-card">
+      <div class="sk-card-head">
+        <h3>Clean UI + Fast</h3>
+      </div>
+      <p class="muted">Modern form UI across all pages with consistent layout.</p>
+    </div>
+
+    <div class="sk-card">
+      <div class="sk-card-head">
+        <h3>Extend Anytime</h3>
+      </div>
+      <p class="muted">You can plug ML models / real mandi APIs later without redesign.</p>
+    </div>
+  </div>
+
+  <div class="sk-footer"></div>
+</div>
+
+{% endblock %}

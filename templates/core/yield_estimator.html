@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block title %}Yield Estimator{% endblock %}
+{% block content %}
+<div class="page-header" style="background:linear-gradient(135deg,#78350f,#b45309,#d97706);">
+  <h1>📊 Crop Yield Estimator</h1>
+  <p>Estimate your expected yield and projected income based on crop and land area.</p>
+</div>
+
+<div style="display:grid;grid-template-columns:400px 1fr;gap:24px;" class="yield-grid">
+
+<div class="card">
+  <div class="card-header"><span>🌾</span><h3>Enter Details</h3></div>
+  <div class="card-body">
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Crop</label>
+        <select name="crop" class="form-control" required>
+          <option value="">-- Select Crop --</option>
+          {% for c in crops %}
+          <option value="{{ c }}" {% if result and result.crop == c %}selected{% endif %}>{{ c|title }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Land Area</label>
+        <div style="display:flex;gap:8px;">
+          <input type="number" name="area" class="form-control" placeholder="e.g. 2.5"
+                 step="0.1" min="0.1" max="1000" value="{% if result %}{{ result.input_area }}{% endif %}" required>
+          <select name="area_unit" class="form-control" style="max-width:120px;">
+            <option value="acres" {% if result and result.area_unit == 'acres' %}selected{% endif %}>Acres</option>
+            <option value="hectares" {% if result and result.area_unit == 'hectares' %}selected{% endif %}>Hectares</option>
+            <option value="bigha" {% if result and result.area_unit == 'bigha' %}selected{% endif %}>Bigha</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg btn-full">📊 Estimate Yield</button>
+    </form>
+
+    <div style="margin-top:20px;padding:14px;background:var(--surface2);border-radius:10px;font-size:.82rem;color:var(--text2);">
+      <div style="font-weight:700;color:var(--text);margin-bottom:8px;">ℹ️ How it works</div>
+      Yield estimates are based on ICAR average data for Indian farming conditions. Actual yield may vary based on soil quality, irrigation, and farming practices.
+    </div>
+  </div>
+</div>
+
+{% if result %}
+<div>
+  <div class="card" style="margin-bottom:16px;border:2px solid var(--green-600);">
+    <div class="card-header"><span style="font-size:1.5rem;">{{ result.info.emoji|default:'🌾' }}</span><h3>{{ result.crop|title }} Estimate</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+        <div style="padding:20px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);border-radius:12px;text-align:center;">
+          <div style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">Expected Yield</div>
+          <div style="font-size:2rem;font-weight:800;color:var(--green-400);margin-top:4px;">{{ result.total_yield_quintals }}</div>
+          <div style="font-size:.82rem;color:var(--text2);">quintals</div>
+          <div style="font-size:.75rem;color:var(--text3);margin-top:2px;">({{ result.total_yield_tonnes }} tonnes)</div>
+        </div>
+        <div style="padding:20px;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);border-radius:12px;text-align:center;">
+          <div style="font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;">Estimated Income</div>
+          <div style="font-size:2rem;font-weight:800;color:#d97706;margin-top:4px;">₹{{ result.estimated_income|floatformat:0 }}</div>
+          <div style="font-size:.82rem;color:var(--text2);">at MSP price</div>
+          <div style="font-size:.75rem;color:var(--text3);margin-top:2px;">₹{{ result.msp_per_quintal }}/quintal</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+        <div style="padding:12px;background:var(--surface2);border-radius:10px;text-align:center;border:1px solid var(--border);">
+          <div style="font-size:.72rem;color:var(--text3);text-transform:uppercase;">Land Area</div>
+          <div style="font-weight:700;color:var(--text);margin-top:4px;">{{ result.input_area }} {{ result.area_unit }}</div>
+          <div style="font-size:.72rem;color:var(--text3);">({{ result.land_ha }} ha)</div>
+        </div>
+        <div style="padding:12px;background:var(--surface2);border-radius:10px;text-align:center;border:1px solid var(--border);">
+          <div style="font-size:.72rem;color:var(--text3);text-transform:uppercase;">Yield/Hectare</div>
+          <div style="font-weight:700;color:var(--text);margin-top:4px;">{{ result.yield_per_ha }} t/ha</div>
+          <div style="font-size:.72rem;color:var(--text3);">ICAR average</div>
+        </div>
+        <div style="padding:12px;background:var(--surface2);border-radius:10px;text-align:center;border:1px solid var(--border);">
+          <div style="font-size:.72rem;color:var(--text3);text-transform:uppercase;">MSP Rate</div>
+          <div style="font-weight:700;color:var(--text);margin-top:4px;">₹{{ result.msp_per_quintal }}</div>
+          <div style="font-size:.72rem;color:var(--text3);">per quintal</div>
+        </div>
+      </div>
+
+      {% if result.info.tips %}
+      <div style="padding:14px;background:rgba(52,211,153,.08);border-radius:10px;border:1px solid rgba(52,211,153,.2);">
+        <div style="font-weight:700;color:var(--text);margin-bottom:8px;font-size:.9rem;">💡 Tips to Maximize Yield</div>
+        {% for tip in result.info.tips %}
+        <div style="font-size:.83rem;color:var(--text2);padding:4px 0;display:flex;gap:8px;">
+          <span style="color:var(--green-400);">→</span><span>{{ tip }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Income breakdown -->
+  <div class="card">
+    <div class="card-header"><span>💰</span><h3>Income Scenarios</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+        <div style="padding:14px;background:rgba(239,68,68,.1);border-radius:10px;text-align:center;border:1px solid rgba(239,68,68,.2);">
+          <div style="font-size:.75rem;color:var(--text3);">Low (70% yield)</div>
+          <div style="font-weight:700;font-size:1.1rem;color:#ef4444;margin-top:4px;">₹{{ result.estimated_income|floatformat:0|add:"0" }}</div>
+          <div style="font-size:.72rem;color:var(--text3);">{{ result.total_yield_quintals }} × 0.7 = {{ result.total_yield_quintals|floatformat:0 }} qtl</div>
+        </div>
+        <div style="padding:14px;background:rgba(34,197,94,.1);border-radius:10px;text-align:center;border:2px solid var(--green-600);">
+          <div style="font-size:.75rem;color:var(--text3);">Average (MSP)</div>
+          <div style="font-weight:800;font-size:1.2rem;color:var(--green-400);margin-top:4px;">₹{{ result.estimated_income|floatformat:0 }}</div>
+          <div style="font-size:.72rem;color:var(--text3);">{{ result.total_yield_quintals }} qtl</div>
+        </div>
+        <div style="padding:14px;background:rgba(245,158,11,.1);border-radius:10px;text-align:center;border:1px solid rgba(245,158,11,.2);">
+          <div style="font-size:.75rem;color:var(--text3);">High (130% yield)</div>
+          <div style="font-weight:700;font-size:1.1rem;color:#d97706;margin-top:4px;">₹{{ result.estimated_income|floatformat:0 }}</div>
+          <div style="font-size:.72rem;color:var(--text3);">{{ result.total_yield_quintals }} × 1.3 qtl</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="card" style="display:flex;align-items:center;justify-content:center;min-height:400px;">
+  <div style="text-align:center;color:var(--text3);">
+    <div style="font-size:4rem;">📊</div>
+    <div style="font-size:1.1rem;margin-top:12px;">Select a crop and land area to see your yield estimate</div>
+  </div>
+</div>
+{% endif %}
+</div>
+<style>@media(max-width:900px){.yield-grid{grid-template-columns:1fr!important;}}</style>
+{% endblock %}
