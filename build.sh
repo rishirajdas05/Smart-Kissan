@@ -5,23 +5,29 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "   Smart-Kissan Build Script"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# Install dependencies
 echo "📦 Installing dependencies..."
 pip install -r requirements.txt
 
-# Collect static files
 echo "📁 Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Run migrations
 echo "🗄️  Running migrations..."
 python manage.py migrate
 
-# Train ML model (pkl files are gitignored so must retrain)
 echo "🤖 Training ML model (119 crops)..."
 python core/ml_models/train_model.py
 
-# Create demo user if not exists
+echo "🔥 Pre-loading ML model into cache..."
+python -c "
+import django, os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'smart_kissan.settings')
+django.setup()
+from core.ml_engine import _load, predict_crop
+_load()
+r = predict_crop(80, 48, 40, 24, 82, 6.4, 236)
+print(f'ML model loaded OK — test prediction: {r[0][\"crop\"]} ({r[0][\"confidence\"]}%)')
+"
+
 echo "👤 Setting up demo user..."
 python manage.py shell -c "
 from django.contrib.auth.models import User
