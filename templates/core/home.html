@@ -2,6 +2,7 @@
 {% block title %}Home{% endblock %}
 {% block content %}
 
+<!-- Hero -->
 <div class="hero animate-slide-up">
   <div class="hero-content">
     <h1>🌱 Smart Farming<br>Starts <span>Here</span></h1>
@@ -13,7 +14,7 @@
   </div>
 </div>
 
-<!-- Weather Card -->
+<!-- Weather + Quick Stats -->
 <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;margin-bottom:28px;" class="weather-grid">
   <div>
     <h2 class="section-title">🌤️ Current Weather — {{ city|title }}</h2>
@@ -26,91 +27,162 @@
           {% if weather.demo %}<div style="margin-top:4px;font-size:.75rem;opacity:.5;">Demo data — Add API key for live weather</div>{% endif %}
         </div>
         <div style="font-size:4rem;">
-          {% if 'rain' in weather.description|lower %}🌧️{% elif 'cloud' in weather.description|lower %}⛅{% elif 'sunny' in weather.description|lower or 'clear' in weather.description|lower %}☀️{% else %}🌤️{% endif %}
+          {% if 'rain' in weather.description|lower %}🌧️
+          {% elif 'cloud' in weather.description|lower %}⛅
+          {% elif 'sunny' in weather.description|lower or 'clear' in weather.description|lower %}☀️
+          {% else %}🌤️{% endif %}
         </div>
       </div>
       <div class="weather-stats">
-        <div class="weather-stat">
-          <div class="label">Humidity</div>
-          <div class="value">{{ weather.humidity }}%</div>
-        </div>
-        <div class="weather-stat">
-          <div class="label">Wind</div>
-          <div class="value">{{ weather.wind }} km/h</div>
-        </div>
-        <div class="weather-stat">
-          <div class="label">Pressure</div>
-          <div class="value">{{ weather.pressure }} hPa</div>
-        </div>
+        <div class="weather-stat"><div class="label">Humidity</div><div class="value">{{ weather.humidity }}%</div></div>
+        <div class="weather-stat"><div class="label">Wind</div><div class="value">{{ weather.wind }} km/h</div></div>
+        <div class="weather-stat"><div class="label">Pressure</div><div class="value">{{ weather.pressure }} hPa</div></div>
       </div>
     </div>
   </div>
+
   <div>
     <h2 class="section-title">📊 Quick Stats</h2>
     <div style="display:flex;flex-direction:column;gap:12px;">
       <div class="stat-card">
         <div class="stat-icon green">🌾</div>
-        <div>
-          <div class="stat-number">{{ user.recommendations.count }}</div>
-          <div class="stat-label">Crop Recommendations</div>
-        </div>
+        <div><div class="stat-number">{{ user.recommendations.count }}</div><div class="stat-label">Crop Recommendations</div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon amber">🪸</div>
-        <div>
-          <div class="stat-number">{{ user.soil_analyses.count }}</div>
-          <div class="stat-label">Soil Analyses Done</div>
-        </div>
+        <div><div class="stat-number">{{ user.soil_analyses.count }}</div><div class="stat-label">Soil Analyses Done</div></div>
       </div>
       <div class="stat-card">
         <div class="stat-icon blue">📈</div>
-        <div>
-          <div class="stat-number">{{ total_crops }}</div>
-          <div class="stat-label">Crops in Database</div>
-        </div>
+        <div><div class="stat-number">{{ total_crops }}</div><div class="stat-label">Crops in Database</div></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Feature Cards -->
+<!-- All Feature Cards -->
 <h2 class="section-title">🚀 Explore Features</h2>
-<div class="feature-cards">
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:32px;">
+
+  <!-- Original features -->
   <a href="{% url 'manual' %}" class="feature-card">
     <div class="feature-card-icon" style="background:#dcfce7;">✏️</div>
-    <h3>Manual Recommendation</h3>
-    <p>Enter your soil parameters and get the best crop</p>
+    <h3>Manual Recommend</h3>
+    <p>Enter soil parameters and get the best crop recommendation</p>
   </a>
+
   <a href="{% url 'auto' %}" class="feature-card">
     <div class="feature-card-icon" style="background:#e0f2fe;">🤖</div>
-    <h3>Auto Detection</h3>
-    <p>Just enter your city — we fetch weather & soil data</p>
+    <h3>Auto Detect</h3>
+    <p>Enter your city — we fetch live weather and soil data</p>
   </a>
+
   <a href="{% url 'soil_analyzer' %}" class="feature-card">
     <div class="feature-card-icon" style="background:#fef3c7;">🪸</div>
     <h3>Soil Analyzer</h3>
-    <p>Get health tips based on pH and moisture</p>
+    <p>Get soil health tips based on pH and moisture levels</p>
   </a>
+
+  <!-- New features -->
+  <a href="{% url 'crop_calendar' %}" class="feature-card">
+    <div class="feature-card-icon" style="background:#e0f2fe;">📅</div>
+    <h3>Crop Calendar</h3>
+    <p>Monthly sowing and harvesting schedule for all crops</p>
+  </a>
+
+  <a href="{% url 'weather_forecast' %}" class="feature-card">
+    <div class="feature-card-icon" style="background:#ede9fe;">🌤️</div>
+    <h3>7-Day Forecast</h3>
+    <p>Plan farm activities with accurate weather predictions</p>
+  </a>
+
+  <a href="{% url 'yield_estimator' %}" class="feature-card">
+    <div class="feature-card-icon" style="background:#fef9c3;">📊</div>
+    <h3>Yield Estimator</h3>
+    <p>Estimate expected yield and income for your land area</p>
+  </a>
+
+  <a href="{% url 'crop_prices' %}?tab=mandi" class="feature-card">
+    <div class="feature-card-icon" style="background:#fce7f3;">🏪</div>
+    <h3>Mandi Locator</h3>
+    <p>Find nearby mandis with live Agmarknet crop prices</p>
+  </a>
+
   <a href="{% url 'crop_prices' %}" class="feature-card">
     <div class="feature-card-icon" style="background:#ede9fe;">💹</div>
-    <h3>Crop Prices</h3>
-    <p>View mandi prices and market trends</p>
+    <h3>Crop Prices & MSP</h3>
+    <p>View MSP rates and market trends for all 119 crops</p>
   </a>
+
+  <a href="{% url 'ai_chat' %}" class="feature-card">
+    <div class="feature-card-icon" style="background:#f0fdf4;">🤖</div>
+    <h3>AI Chat Assistant</h3>
+    <p>Ask anything about farming — powered by Groq Llama 3.3</p>
+  </a>
+
   <a href="{% url 'crops_list' %}" class="feature-card">
     <div class="feature-card-icon" style="background:#fce7f3;">🌾</div>
     <h3>Crops Library</h3>
-    <p>Explore all 25 supported crops</p>
+    <p>Explore all {{ total_crops }} crops with tips and MSP data</p>
   </a>
+
   <a href="{% url 'dashboard' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#ecfdf5;">📊</div>
+    <div class="feature-card-icon" style="background:#ecfdf5;">📈</div>
     <h3>My Dashboard</h3>
-    <p>Your activity history and analytics</p>
+    <p>Activity history, charts and recommendation analytics</p>
   </a>
+
+  <a href="{% url 'support' %}" class="feature-card">
+    <div class="feature-card-icon" style="background:#fef3c7;">💬</div>
+    <h3>Support</h3>
+    <p>Get help, read FAQs or send us a message</p>
+  </a>
+
 </div>
 
+<!-- AI Chat quick widget -->
+<div class="card" style="margin-bottom:28px;background:linear-gradient(135deg,#1e1b4b,#312e81,#4338ca);border:none;">
+  <div class="card-body" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
+    <div style="font-size:3rem;">🤖</div>
+    <div style="flex:1;">
+      <div style="font-weight:800;font-size:1.2rem;color:white;">Smart-Kissan AI Assistant</div>
+      <div style="color:rgba(255,255,255,.7);font-size:.88rem;margin-top:4px;">
+        Ask anything — crop diseases, fertilizer doses, sowing time, government schemes, MSP prices — in English or Hindi.
+      </div>
+    </div>
+    <a href="{% url 'ai_chat' %}" class="btn btn-lg"
+       style="background:white;color:#4338ca;font-weight:700;flex-shrink:0;padding:12px 24px;">
+      💬 Chat Now
+    </a>
+  </div>
+</div>
+
+
+
 <style>
-@media (max-width:900px) {
-  .weather-grid { grid-template-columns: 1fr !important; }
+@media(max-width:900px){
+  .weather-grid{ grid-template-columns:1fr!important; }
+}
+.feature-card {
+  display:flex;flex-direction:column;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:20px;text-decoration:none;
+  transition:all .2s;
+}
+.feature-card:hover {
+  transform:translateY(-3px);
+  border-color:var(--green-500);
+  box-shadow:0 8px 24px rgba(0,0,0,.15);
+}
+.feature-card h3 {
+  font-size:.95rem;font-weight:700;color:var(--text);margin:10px 0 4px;
+}
+.feature-card p {
+  font-size:.8rem;color:var(--text3);line-height:1.5;margin:0;
+}
+.feature-card-icon {
+  width:48px;height:48px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
 }
 </style>
 {% endblock %}
