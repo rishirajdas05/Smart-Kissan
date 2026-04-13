@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-<<<<<<< HEAD
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
@@ -19,18 +18,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-=======
-import os
-import sys
-
-def main():
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'crop_reco.settings')
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError("Couldn't import Django.") from exc
-    execute_from_command_line(sys.argv)
-
->>>>>>> 4aecf1fb38a2273c855714379fe153af2ff49375
 if __name__ == '__main__':
     main()
