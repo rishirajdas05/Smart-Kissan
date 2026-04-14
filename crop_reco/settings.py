@@ -133,6 +133,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ── Cloudinary (profile photo storage) ──────────────────────────────────────
+import cloudinary
+cloudinary.config(
+    cloud_name  = os.environ.get('CLOUDINARY_CLOUD_NAME', 'djtvmkxeg'),
+    api_key     = os.environ.get('CLOUDINARY_API_KEY', ''),
+    api_secret  = os.environ.get('CLOUDINARY_API_SECRET', ''),
+    secure      = True
+)
+
 # ── API Keys ──────────────────────────────────────────────────────────────────
 OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', '')
 DATA_GOV_API_KEY    = os.environ.get('DATA_GOV_API_KEY', '')

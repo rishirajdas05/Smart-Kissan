@@ -383,7 +383,24 @@ def profile(request):
         profile.bio       = request.POST.get('bio', '')
         profile.language  = request.POST.get('language', 'en')
         if request.FILES.get('avatar'):
-            profile.avatar = request.FILES['avatar']
+            try:
+                import cloudinary.uploader
+                avatar_file = request.FILES['avatar']
+                upload_result = cloudinary.uploader.upload(
+                    avatar_file,
+                    folder='smart-kissan/avatars',
+                    public_id=f'user_{request.user.id}',
+                    overwrite=True,
+                    resource_type='image',
+                    transformation=[
+                        {'width': 200, 'height': 200, 'crop': 'fill', 'gravity': 'face'}
+                    ]
+                )
+                # Save Cloudinary URL to profile
+                profile.avatar_url = upload_result.get('secure_url', '')
+            except Exception as e:
+                # Fallback to local storage
+                profile.avatar = request.FILES['avatar']
         profile.save()
         messages.success(request, 'Profile updated successfully!')
         return redirect('profile')

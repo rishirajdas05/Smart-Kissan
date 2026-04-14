@@ -79,7 +79,9 @@
       <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#4aad62,#e8962a);
                   display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;
                   color:#0a2010;flex-shrink:0;overflow:hidden;">
-        {% if user.profile.avatar %}
+        {% if user.profile.avatar_url %}
+          <img src="{{ user.profile.avatar_url }}" style="width:32px;height:32px;object-fit:cover;display:block;" alt="">
+        {% elif user.profile.avatar %}
           <img src="{{ user.profile.avatar.url }}" style="width:32px;height:32px;object-fit:cover;display:block;" alt="">
         {% else %}
           {{ user.first_name|first|upper|default:user.username|first|upper }}
