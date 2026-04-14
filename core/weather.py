@@ -352,75 +352,85 @@ def get_mandi_prices_live(crop, state='', limit=10):
     # Commodity name mapping (our names → Agmarknet names)
     COMMODITY_MAP = {
         'rice': 'Rice', 'wheat': 'Wheat', 'maize': 'Maize',
-        'bajra': 'Bajra(Pearl Millet/Cumbu)', 'sorghum': 'Jowar(Sorghum)',
-        'jowar': 'Jowar(Sorghum)', 'ragi': 'Ragi (Finger Millet)',
-        'cotton': 'Cotton', 'sugarcane': 'Sugarcane',
+        'bajra': 'Bajra', 'sorghum': 'Jowar', 'jowar': 'Jowar',
+        'ragi': 'Ragi', 'cotton': 'Cotton', 'sugarcane': 'Sugarcane',
         'soybean': 'Soyabean', 'groundnut': 'Groundnut',
-        'mustard': 'Mustard', 'sunflower': 'Sunflower Seed',
+        'mustard': 'Mustard', 'sunflower': 'Sunflower',
         'onion': 'Onion', 'potato': 'Potato', 'tomato': 'Tomato',
-        'garlic': 'Garlic', 'chilli': 'Dry Chillies',
-        'turmeric': 'Turmeric', 'ginger': 'Ginger(Dry)',
-        'chickpea': 'Gram', 'lentil': 'Lentil', 'mungbean': 'Moong(Whole)',
-        'blackgram': 'Black Gram (Urd Beans)(Whole)',
-        'pigeonpeas': 'Arhar (Tur/Red Gram)(Whole)',
+        'garlic': 'Garlic', 'chilli': 'Chilli',
+        'turmeric': 'Turmeric', 'ginger': 'Ginger',
+        'chickpea': 'Gram', 'lentil': 'Lentil', 'mungbean': 'Moong',
+        'blackgram': 'Black Gram', 'pigeonpeas': 'Arhar (Tur)',
         'banana': 'Banana', 'mango': 'Mango', 'papaya': 'Papaya',
         'coconut': 'Coconut', 'orange': 'Orange', 'apple': 'Apple',
         'grapes': 'Grapes', 'pomegranate': 'Pomegranate',
         'watermelon': 'Water Melon', 'guava': 'Guava',
         'brinjal': 'Brinjal', 'okra': 'Bhindi(Ladies Finger)',
         'cabbage': 'Cabbage', 'cauliflower': 'Cauliflower',
-        'peas': 'Peas Wet', 'carrot': 'Carrot', 'radish': 'Raddish',
+        'peas': 'Peas', 'carrot': 'Carrot', 'radish': 'Radish',
         'spinach': 'Spinach', 'bitter_gourd': 'Bitter Gourd',
         'bottle_gourd': 'Bottle Gourd', 'cucumber': 'Cucumber',
-        'pepper': 'Pepper ungarbled', 'cardamom': 'Cardamom',
+        'pepper': 'Pepper', 'cardamom': 'Cardamom',
         'coffee': 'Coffee', 'tea': 'Tea',
         'jute': 'Jute', 'barley': 'Barley',
-        'sesame': 'Sesamum(Sesame/Gingelly)', 'linseed': 'Linseed',
+        'sesame': 'Sesamum', 'linseed': 'Linseed',
         'castor': 'Castor Seed', 'safflower': 'Safflower',
     }
 
     commodity = COMMODITY_MAP.get(crop.lower(), crop.title())
 
-    try:
-        url = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
-        params = {
-            'api-key': api_key,
-            'format': 'json',
-            'limit': limit,
-            'filters[Commodity]': commodity,
-        }
-        if state:
-            params['filters[State]'] = state.title()
+    def _parse_rec(rec, commodity):
+        try:
+            return {
+                'market':      rec.get('market', '—'),
+                'district':    rec.get('district', '—'),
+                'state':       rec.get('state', '—'),
+                'commodity':   rec.get('commodity', commodity),
+                'variety':     rec.get('variety', '—'),
+                'min_price':   int(float(rec.get('min_price', 0) or 0)),
+                'max_price':   int(float(rec.get('max_price', 0) or 0)),
+                'modal_price': int(float(rec.get('modal_price', 0) or 0)),
+                'date':        rec.get('arrival_date', '—'),
+            }
+        except Exception:
+            return None
 
-        r = req.get(url, params=params, timeout=8)
-        if r.status_code == 200:
+    base_url = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
+
+    # Build alternate commodity names to try
+    alt_names = list(dict.fromkeys([
+        commodity,
+        commodity.title(),
+        commodity.upper(),
+        crop.title(),
+        # Common alternate spellings on Agmarknet
+        commodity.replace('(', '').replace(')', '').strip(),
+    ]))
+
+    # Try with state+commodity, then just commodity, then alternate names
+    filter_attempts = []
+    for name in alt_names[:3]:
+        if state:
+            filter_attempts.append({'filters[commodity]': name, 'filters[state]': state.title()})
+        filter_attempts.append({'filters[commodity]': name})
+
+    try:
+        for extra in filter_attempts:
+            params = {'api-key': api_key, 'format': 'json', 'limit': limit, **extra}
+            r = req.get(base_url, params=params, timeout=10)
+            if r.status_code != 200:
+                return {'success': False, 'live': False, 'error': f'API returned {r.status_code}'}
             data = r.json()
             records = data.get('records', [])
-            if records:
-                prices = []
-                for rec in records:
-                    try:
-                        prices.append({
-                            'market':      rec.get('Market', '—'),
-                            'district':    rec.get('District', '—'),
-                            'state':       rec.get('State', '—'),
-                            'commodity':   rec.get('Commodity', commodity),
-                            'variety':     rec.get('Variety', '—'),
-                            'min_price':   int(float(rec.get('Min_Price', 0))),
-                            'max_price':   int(float(rec.get('Max_Price', 0))),
-                            'modal_price': int(float(rec.get('Modal_Price', 0))),
-                            'date':        rec.get('Arrival_Date', '—'),
-                        })
-                    except Exception:
-                        continue
+            if not records:
+                continue
+            prices = [p for p in (_parse_rec(rec, commodity) for rec in records) if p and p['modal_price'] > 0]
+            if prices:
                 return {
-                    'success': True,
-                    'live': True,
-                    'crop': crop,
-                    'commodity': commodity,
-                    'prices': prices,
-                    'total': data.get('total', len(prices)),
+                    'success': True, 'live': True,
+                    'crop': crop, 'commodity': commodity,
+                    'prices': prices, 'total': data.get('total', len(prices)),
                 }
-        return {'success': False, 'live': False, 'error': f'API returned {r.status_code}'}
+        return {'success': False, 'live': False, 'error': 'No data available for this crop/state combination'}
     except Exception as e:
         return {'success': False, 'live': False, 'error': str(e)[:100]}

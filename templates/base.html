@@ -15,95 +15,147 @@
 
 {% if user.is_authenticated %}
 <nav class="navbar">
-  <div class="nav-top">
 
-    <!-- Logo: round icon + brand text -->
-    <a href="{% url 'home' %}" class="nav-brand" style="flex-shrink:0;text-decoration:none;display:flex;align-items:center;gap:10px;">
-      <img src="{% static 'core/img/navbar_logo.png' %}"
-           alt="Smart-Kissan Logo"
-           style="width:60px;height:60px;object-fit:contain;display:block;flex-shrink:0;">
+  <!-- Top bar -->
+  <div style="display:flex;align-items:center;padding:0 24px;height:64px;gap:12px;border-bottom:1px solid rgba(255,255,255,.06);">
+
+    <!-- Logo -->
+    <a href="{% url 'home' %}" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
+      <img src="{% static 'core/img/navbar_logo.png' %}" alt="Smart-Kissan" style="width:42px;height:42px;object-fit:contain;flex-shrink:0;">
       <div style="display:flex;flex-direction:column;line-height:1.2;">
-        <span style="font-family:'Georgia',serif;font-size:1.25rem;font-weight:800;letter-spacing:.2px;">
-          <span style="color:#4cce7a;">Smart</span><span style="color:rgba(255,255,255,.8);">-</span><span style="color:#f5a623;">Kissan</span>
+        <span style="font-family:'Lora',Georgia,serif;font-size:1.1rem;font-weight:700;color:#fff;white-space:nowrap;">
+          Smart-<span style="color:#f0a83e;">Kissan</span>
         </span>
-        <span style="font-size:.62rem;color:rgba(255,255,255,.45);letter-spacing:.9px;text-transform:uppercase;">AI Crop Recommendation</span>
+        <span style="font-size:.58rem;color:rgba(255,255,255,.38);letter-spacing:1.1px;text-transform:uppercase;font-family:'Inter',sans-serif;">AI Crop Intelligence</span>
       </div>
     </a>
 
-    <div style="display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0;">
-
-      <!-- Weather pill -->
-      <div id="navbar-weather" class="nav-weather">
-        <span id="nw-icon">🌤️</span>
-        <span id="nw-temp" class="temp">--°C</span>
-        <span id="nw-city" class="city">Loading...</span>
+    <!-- Spacer -->
+    <div style="flex:1;"></div>
+    <!-- Language selector -->
+    <div style="position:relative;flex-shrink:0;" id="lang-wrapper">
+      <button onclick="toggleLangMenu()" id="lang-btn"
+        style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);
+               border:1px solid rgba(255,255,255,.1);border-radius:8px;color:white;
+               padding:5px 12px;cursor:pointer;font-size:.78rem;font-weight:500;
+               font-family:'Plus Jakarta Sans',sans-serif;white-space:nowrap;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <span id="lang-label">{{ current_lang_name|default:"English" }}</span>
+      </button>
+      <div id="lang-menu" style="display:none;position:absolute;right:0;top:calc(100% + 6px);
+           background:var(--surface);border:1px solid var(--border);border-radius:10px;
+           box-shadow:0 8px 32px rgba(0,0,0,.5);z-index:9999;min-width:165px;overflow:hidden;">
+        {% for code, info in languages.items %}
+        <a href="{% url 'switch_language' %}?lang={{ code }}&next={{ request.path }}"
+           style="display:flex;align-items:center;justify-content:space-between;
+                  padding:9px 14px;text-decoration:none;font-size:.82rem;
+                  color:{% if code == current_lang %}var(--green-400){% else %}var(--text2){% endif %};
+                  font-family:'Plus Jakarta Sans',sans-serif;border-bottom:1px solid var(--border);"
+           onmouseover="this.style.background='var(--surface2)'"
+           onmouseout="this.style.background='transparent'">
+          <span>{{ info.native }}</span>
+          {% if code == current_lang %}<span style="width:6px;height:6px;background:var(--green-400);border-radius:50%;display:inline-block;flex-shrink:0;"></span>{% endif %}
+        </a>
+        {% endfor %}
       </div>
-
-      <!-- Dark / Light toggle -->
-      <button id="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode"
-        style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
-               color:white;width:36px;height:36px;border-radius:50%;cursor:pointer;
-               font-size:1rem;display:flex;align-items:center;justify-content:center;
-               transition:all .2s;flex-shrink:0;">🌙</button>
-
-      <!-- User avatar + name -->
-      <a href="{% url 'profile' %}" class="nav-user" style="text-decoration:none;">
-        <div class="nav-avatar">{{ user.first_name|first|upper|default:user.username|first|upper }}</div>
-        <span class="nav-username">{{ user.first_name|default:user.username }}</span>
-      </a>
-
-      <!-- Logout -->
-      <form method="post" action="{% url 'logout' %}" style="margin:0;">
-        {% csrf_token %}
-        <button type="submit" class="logout-btn">Logout</button>
-      </form>
     </div>
+
+    <!-- Weather pill -->
+    <div id="navbar-weather" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 13px;white-space:nowrap;flex-shrink:0;">
+      <span id="nw-temp" style="color:#f0a83e;font-weight:700;font-size:.88rem;">--°C</span>
+      <span id="nw-city" style="color:rgba(255,255,255,.55);font-size:.78rem;">Loading...</span>
+    </div>
+
+    <!-- Theme toggle -->
+    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme"
+      style="width:34px;height:34px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+             border-radius:8px;color:white;cursor:pointer;display:flex;align-items:center;
+             justify-content:center;flex-shrink:0;transition:all .18s;">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+
+    <!-- User -->
+    <a href="{% url 'profile' %}" style="display:flex;align-items:center;gap:8px;text-decoration:none;padding:4px 8px 4px 4px;border-radius:8px;transition:all .18s;flex-shrink:0;" onmouseover="this.style.background='rgba(255,255,255,.07)'" onmouseout="this.style.background='transparent'">
+      <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#4aad62,#e8962a);
+                  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem;
+                  color:#0a2010;flex-shrink:0;overflow:hidden;">
+        {% if user.profile.avatar %}
+          <img src="{{ user.profile.avatar.url }}" style="width:32px;height:32px;object-fit:cover;display:block;" alt="">
+        {% else %}
+          {{ user.first_name|first|upper|default:user.username|first|upper }}
+        {% endif %}
+      </div>
+      <span style="color:rgba(255,255,255,.7);font-size:.82rem;font-weight:500;white-space:nowrap;">{{ user.first_name|default:user.username }}</span>
+    </a>
+
+    <!-- Sign out -->
+    <form method="post" action="{% url 'logout' %}" style="margin:0;flex-shrink:0;">
+      {% csrf_token %}
+      <button type="submit" style="background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);padding:5px 13px;border-radius:7px;cursor:pointer;font-size:.78rem;font-family:'Inter',sans-serif;font-weight:500;transition:all .18s;white-space:nowrap;"
+        onmouseover="this.style.background='rgba(255,255,255,.09)';this.style.color='white'"
+        onmouseout="this.style.background='transparent';this.style.color='rgba(255,255,255,.55)'">
+        Sign out
+      </button>
+    </form>
+
   </div>
 
-  <div class="nav-links">
-    <a href="{% url 'home' %}"             class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}"><span class="icon">🏠</span> Home</a>
-    <a href="{% url 'manual' %}"           class="nav-link {% if request.resolver_match.url_name == 'manual' %}active{% endif %}"><span class="icon">✏️</span> Manual</a>
-    <a href="{% url 'auto' %}"             class="nav-link {% if request.resolver_match.url_name == 'auto' %}active{% endif %}"><span class="icon">🤖</span> Auto Detect</a>
-    <a href="{% url 'soil_analyzer' %}"    class="nav-link {% if request.resolver_match.url_name == 'soil_analyzer' %}active{% endif %}"><span class="icon">🪸</span> Soil</a>
-    <a href="{% url 'crop_calendar' %}"    class="nav-link {% if request.resolver_match.url_name == 'crop_calendar' %}active{% endif %}"><span class="icon">📅</span> Calendar</a>
-    <a href="{% url 'weather_forecast' %}" class="nav-link {% if request.resolver_match.url_name == 'weather_forecast' %}active{% endif %}"><span class="icon">🌤️</span> Forecast</a>
-    <a href="{% url 'yield_estimator' %}"  class="nav-link {% if request.resolver_match.url_name == 'yield_estimator' %}active{% endif %}"><span class="icon">📊</span> Yield</a>
-    <a href="{% url 'crop_prices' %}"      class="nav-link {% if request.resolver_match.url_name == 'crop_prices' or request.resolver_match.url_name == 'mandi_locator' %}active{% endif %}"><span class="icon">💹</span> Prices & Mandi</a>
-    <a href="{% url 'crops_list' %}"       class="nav-link {% if request.resolver_match.url_name == 'crops_list' %}active{% endif %}"><span class="icon">🌾</span> Crops</a>
-    <a href="{% url 'ai_chat' %}"          class="nav-link {% if request.resolver_match.url_name == 'ai_chat' %}active{% endif %}"><span class="icon">🤖</span> AI Chat</a>
-    <a href="{% url 'dashboard' %}"        class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><span class="icon">📈</span> Dashboard</a>
-    <a href="{% url 'support' %}"          class="nav-link {% if request.resolver_match.url_name == 'support' %}active{% endif %}"><span class="icon">💬</span> Support</a>
+  <!-- Nav links -->
+  <div style="display:flex;align-items:center;justify-content:center;padding:0 20px;gap:1px;overflow-x:auto;scrollbar-width:none;height:42px;">
+    <a href="{% url 'home' %}"             class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a>
+    <a href="{% url 'manual' %}"           class="nav-link {% if request.resolver_match.url_name == 'manual' %}active{% endif %}">Manual</a>
+    <a href="{% url 'auto' %}"             class="nav-link {% if request.resolver_match.url_name == 'auto' %}active{% endif %}">Auto Detect</a>
+    <a href="{% url 'soil_analyzer' %}"    class="nav-link {% if request.resolver_match.url_name == 'soil_analyzer' %}active{% endif %}">Soil</a>
+    <a href="{% url 'crop_calendar' %}"    class="nav-link {% if request.resolver_match.url_name == 'crop_calendar' %}active{% endif %}">Calendar</a>
+    <a href="{% url 'weather_forecast' %}" class="nav-link {% if request.resolver_match.url_name == 'weather_forecast' %}active{% endif %}">Forecast</a>
+    <a href="{% url 'yield_estimator' %}"  class="nav-link {% if request.resolver_match.url_name == 'yield_estimator' %}active{% endif %}">Yield</a>
+    <a href="{% url 'crop_prices' %}"      class="nav-link {% if request.resolver_match.url_name == 'crop_prices' or request.resolver_match.url_name == 'mandi_locator' %}active{% endif %}">Prices & Mandi</a>
+    <a href="{% url 'crops_list' %}"       class="nav-link {% if request.resolver_match.url_name == 'crops_list' %}active{% endif %}">Crops</a>
+    <a href="{% url 'ai_chat' %}"          class="nav-link {% if request.resolver_match.url_name == 'ai_chat' %}active{% endif %}">AI Chat</a>
+    <a href="{% url 'dashboard' %}"        class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">Dashboard</a>
+    <a href="{% url 'support' %}"          class="nav-link {% if request.resolver_match.url_name == 'support' %}active{% endif %}">Support</a>
   </div>
+
 </nav>
 {% endif %}
 
 <div class="{% if user.is_authenticated %}main-content{% endif %}">
   {% if messages %}
     {% for msg in messages %}
-      <div class="alert alert-{{ msg.tags|default:'info' }}">
-        {% if msg.tags == 'success' %}✅{% elif msg.tags == 'error' %}❌{% else %}ℹ️{% endif %}
-        {{ msg }}
-      </div>
+      <div class="alert alert-{{ msg.tags|default:'info' }}">{{ msg }}</div>
     {% endfor %}
   {% endif %}
   {% block content %}{% endblock %}
 </div>
 
 <script>
+function toggleLangMenu() {
+  var menu = document.getElementById('lang-menu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', function(e) {
+  var w = document.getElementById('lang-wrapper');
+  if (w && !w.contains(e.target)) {
+    document.getElementById('lang-menu').style.display = 'none';
+  }
+});
+
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('sk-theme', theme);
   var btn = document.getElementById('theme-toggle');
-  if (btn) btn.textContent = theme === 'dark' ? '🌙' : '☀️';
+  if (btn) {
+    btn.innerHTML = theme === 'dark'
+      ? '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+      : '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+  }
 }
 function toggleTheme() {
   var cur = document.documentElement.getAttribute('data-theme') || 'dark';
   applyTheme(cur === 'dark' ? 'light' : 'dark');
 }
 document.addEventListener('DOMContentLoaded', function() {
-  var saved = localStorage.getItem('sk-theme') || 'dark';
-  var btn = document.getElementById('theme-toggle');
-  if (btn) btn.textContent = saved === 'dark' ? '🌙' : '☀️';
+  applyTheme(localStorage.getItem('sk-theme') || 'dark');
 });
 
 {% if user.is_authenticated %}
@@ -112,17 +164,82 @@ fetch('/api/weather/?city=' + encodeURIComponent("{{ user.profile.city|default:'
   .then(function(d){
     document.getElementById('nw-temp').textContent = d.temp + '°C';
     document.getElementById('nw-city').textContent = d.city;
-    var desc = (d.description || '').toLowerCase();
-    var icon = '🌤️';
-    if (desc.includes('rain') || desc.includes('drizzle')) icon = '🌧️';
-    else if (desc.includes('storm') || desc.includes('thunder')) icon = '⛈️';
-    else if (desc.includes('cloud')) icon = '⛅';
-    else if (desc.includes('clear') || desc.includes('sunny')) icon = d.temp > 35 ? '🌞' : '☀️';
-    else if (desc.includes('fog') || desc.includes('mist')) icon = '🌫️';
-    document.getElementById('nw-icon').textContent = icon;
   }).catch(function(){});
 {% endif %}
 </script>
 {% block extra_scripts %}{% endblock %}
+
+{% if current_lang != 'en' %}
+<script>
+(function() {
+  var lang = "{{ current_lang }}";
+  if (lang === 'en') return;
+
+  var selectors = [
+    '.page-header h1', '.page-header p',
+    '.section-title', '.hero h1', '.hero p',
+    '.card-header h3', '.feature-card h3', '.feature-card p',
+    '.stat-label', '.weather-desc', '.tips-section-title',
+    'label.form-label', '.form-hint', 'h2', 'h3'
+  ];
+
+  function isTranslatable(text) {
+    if (!text || text.length < 3) return false;
+    if (/^[\d\s\W]+$/.test(text)) return false;
+    return true;
+  }
+
+  window.addEventListener('load', function() {
+    var elements = [];
+    selectors.forEach(function(sel) {
+      try {
+        document.querySelectorAll(sel).forEach(function(el) {
+          if (!el.querySelector('input,select,textarea')) {
+            var text = el.innerText.trim();
+            if (isTranslatable(text) && el.getAttribute('data-translated') !== lang) {
+              elements.push(el);
+            }
+          }
+        });
+      } catch(e) {}
+    });
+
+    if (elements.length === 0) return;
+
+    var indicator = document.createElement('div');
+    indicator.innerHTML = 'Translating...';
+    indicator.style.cssText = 'position:fixed;bottom:16px;right:16px;background:var(--surface);' +
+      'border:1px solid var(--border);border-radius:8px;padding:7px 13px;font-size:.72rem;' +
+      'color:var(--text3);z-index:9999;';
+    document.body.appendChild(indicator);
+
+    var done = 0;
+    function checkDone() {
+      done++;
+      if (done >= elements.length) setTimeout(function(){ indicator.remove(); }, 500);
+    }
+
+    elements.forEach(function(el) {
+      var original = el.innerText.trim();
+      if (!isTranslatable(original)) { checkDone(); return; }
+      el.setAttribute('data-orig', original);
+      el.style.opacity = '0.55';
+
+      fetch('/api/translate/?text=' + encodeURIComponent(original) + '&lang=' + lang)
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if (d.translated && d.translated !== original) {
+            el.innerText = d.translated;
+            el.setAttribute('data-translated', lang);
+          }
+          el.style.opacity = '1';
+          checkDone();
+        })
+        .catch(function(){ el.style.opacity = '1'; checkDone(); });
+    });
+  });
+})();
+</script>
+{% endif %}
 </body>
 </html>

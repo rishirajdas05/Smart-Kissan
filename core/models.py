@@ -78,3 +78,20 @@ class YieldEstimate(models.Model):
     estimated_income = models.FloatField()
     msp_price = models.FloatField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+
+class TranslationCache(models.Model):
+    """Cache translated strings to avoid repeated Groq API calls."""
+    source_text  = models.TextField()
+    language     = models.CharField(max_length=10)  # e.g. 'hi', 'ta', 'te'
+    translated   = models.TextField()
+    created_at   = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('source_text', 'language')
+        indexes = [
+            models.Index(fields=['language']),
+        ]
+
+    def __str__(self):
+        return f"{self.language}: {self.source_text[:40]}"

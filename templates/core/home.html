@@ -5,11 +5,11 @@
 <!-- Hero -->
 <div class="hero animate-slide-up">
   <div class="hero-content">
-    <h1>🌱 Smart Farming<br>Starts <span>Here</span></h1>
+    <h1> Smart Farming<br>Starts <span>Here</span></h1>
     <p>AI-powered crop recommendations tailored to your soil, weather, and location. Grow smarter with Smart-Kissan.</p>
     <div class="hero-btns">
-      <a href="{% url 'manual' %}" class="btn btn-amber btn-lg">✏️ Manual Recommend</a>
-      <a href="{% url 'auto' %}" class="btn btn-lg" style="background:rgba(255,255,255,.15);color:white;border:2px solid rgba(255,255,255,.3);">🤖 Auto Detect</a>
+      <a href="{% url 'manual' %}" class="btn btn-amber btn-lg"> Manual Recommend</a>
+      <a href="{% url 'auto' %}" class="btn btn-lg" style="background:rgba(255,255,255,.15);color:white;border:2px solid rgba(255,255,255,.3);"> Auto Detect</a>
     </div>
   </div>
 </div>
@@ -17,20 +17,20 @@
 <!-- Weather + Quick Stats -->
 <div style="display:grid;grid-template-columns:1fr 320px;gap:20px;margin-bottom:28px;" class="weather-grid">
   <div>
-    <h2 class="section-title">🌤️ Current Weather — {{ city|title }}</h2>
+    <h2 class="section-title"> Current Weather — {{ city|title }}</h2>
     <div class="weather-widget">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
         <div>
           <div class="weather-temp">{{ weather.temp }}°C</div>
           <div class="weather-desc">{{ weather.description }}</div>
-          <div style="margin-top:8px;font-size:.9rem;opacity:.7;">📍 {{ weather.city }}</div>
+          <div style="margin-top:8px;font-size:.9rem;opacity:.7;"> {{ weather.city }}</div>
           {% if weather.demo %}<div style="margin-top:4px;font-size:.75rem;opacity:.5;">Demo data — Add API key for live weather</div>{% endif %}
         </div>
         <div style="font-size:4rem;">
-          {% if 'rain' in weather.description|lower %}🌧️
-          {% elif 'cloud' in weather.description|lower %}⛅
-          {% elif 'sunny' in weather.description|lower or 'clear' in weather.description|lower %}☀️
-          {% else %}🌤️{% endif %}
+          {% if 'rain' in weather.description|lower %}
+          {% elif 'cloud' in weather.description|lower %}
+          {% elif 'sunny' in weather.description|lower or 'clear' in weather.description|lower %}
+          {% else %}{% endif %}
         </div>
       </div>
       <div class="weather-stats">
@@ -42,18 +42,18 @@
   </div>
 
   <div>
-    <h2 class="section-title">📊 Quick Stats</h2>
+    <h2 class="section-title"> Quick Stats</h2>
     <div style="display:flex;flex-direction:column;gap:12px;">
       <div class="stat-card">
-        <div class="stat-icon green">🌾</div>
+        <div class="stat-icon green">&#127807;</div>
         <div><div class="stat-number">{{ user.recommendations.count }}</div><div class="stat-label">Crop Recommendations</div></div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon amber">🪸</div>
+        <div class="stat-icon amber">&#127803;</div>
         <div><div class="stat-number">{{ user.soil_analyses.count }}</div><div class="stat-label">Soil Analyses Done</div></div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon blue">📈</div>
+        <div class="stat-icon blue">&#128200;</div>
         <div><div class="stat-number">{{ total_crops }}</div><div class="stat-label">Crops in Database</div></div>
       </div>
     </div>
@@ -61,79 +61,67 @@
 </div>
 
 <!-- All Feature Cards -->
-<h2 class="section-title">🚀 Explore Features</h2>
+<h2 class="section-title"> Explore Features</h2>
 <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:32px;">
 
   <!-- Original features -->
   <a href="{% url 'manual' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#dcfce7;">✏️</div>
     <h3>Manual Recommend</h3>
     <p>Enter soil parameters and get the best crop recommendation</p>
   </a>
 
   <a href="{% url 'auto' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#e0f2fe;">🤖</div>
     <h3>Auto Detect</h3>
     <p>Enter your city — we fetch live weather and soil data</p>
   </a>
 
   <a href="{% url 'soil_analyzer' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#fef3c7;">🪸</div>
     <h3>Soil Analyzer</h3>
     <p>Get soil health tips based on pH and moisture levels</p>
   </a>
 
   <!-- New features -->
   <a href="{% url 'crop_calendar' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#e0f2fe;">📅</div>
     <h3>Crop Calendar</h3>
     <p>Monthly sowing and harvesting schedule for all crops</p>
   </a>
 
   <a href="{% url 'weather_forecast' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#ede9fe;">🌤️</div>
     <h3>7-Day Forecast</h3>
     <p>Plan farm activities with accurate weather predictions</p>
   </a>
 
   <a href="{% url 'yield_estimator' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#fef9c3;">📊</div>
     <h3>Yield Estimator</h3>
     <p>Estimate expected yield and income for your land area</p>
   </a>
 
   <a href="{% url 'crop_prices' %}?tab=mandi" class="feature-card">
-    <div class="feature-card-icon" style="background:#fce7f3;">🏪</div>
     <h3>Mandi Locator</h3>
     <p>Find nearby mandis with live Agmarknet crop prices</p>
   </a>
 
   <a href="{% url 'crop_prices' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#ede9fe;">💹</div>
     <h3>Crop Prices & MSP</h3>
     <p>View MSP rates and market trends for all 119 crops</p>
   </a>
 
   <a href="{% url 'ai_chat' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#f0fdf4;">🤖</div>
     <h3>AI Chat Assistant</h3>
     <p>Ask anything about farming — powered by Groq Llama 3.3</p>
   </a>
 
   <a href="{% url 'crops_list' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#fce7f3;">🌾</div>
     <h3>Crops Library</h3>
     <p>Explore all {{ total_crops }} crops with tips and MSP data</p>
   </a>
 
   <a href="{% url 'dashboard' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#ecfdf5;">📈</div>
     <h3>My Dashboard</h3>
     <p>Activity history, charts and recommendation analytics</p>
   </a>
 
   <a href="{% url 'support' %}" class="feature-card">
-    <div class="feature-card-icon" style="background:#fef3c7;">💬</div>
     <h3>Support</h3>
     <p>Get help, read FAQs or send us a message</p>
   </a>
@@ -143,7 +131,7 @@
 <!-- AI Chat quick widget -->
 <div class="card" style="margin-bottom:28px;background:linear-gradient(135deg,#1e1b4b,#312e81,#4338ca);border:none;">
   <div class="card-body" style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;">
-    <div style="font-size:3rem;">🤖</div>
+    <div style="font-size:3rem;"></div>
     <div style="flex:1;">
       <div style="font-weight:800;font-size:1.2rem;color:white;">Smart-Kissan AI Assistant</div>
       <div style="color:rgba(255,255,255,.7);font-size:.88rem;margin-top:4px;">
@@ -152,7 +140,7 @@
     </div>
     <a href="{% url 'ai_chat' %}" class="btn btn-lg"
        style="background:white;color:#4338ca;font-weight:700;flex-shrink:0;padding:12px 24px;">
-      💬 Chat Now
+       Chat Now
     </a>
   </div>
 </div>

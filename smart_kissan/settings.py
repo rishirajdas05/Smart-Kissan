@@ -5,7 +5,6 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ── Security ──────────────────────────────────────────────────────────────────
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-dev-only')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['*']
@@ -18,9 +17,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+
+    # django-allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
     'core',
     'accounts',
 ]
+
+SITE_ID = 1
 
 # ── Middleware ─────────────────────────────────────────────────────────────────
 MIDDLEWARE = [
@@ -32,6 +41,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'smart_kissan.urls'
@@ -47,6 +57,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.lang_context',
             ],
         },
     },
@@ -72,11 +83,37 @@ else:
         }
     }
 
-# ── Auth ──────────────────────────────────────────────────────────────────────
+# ── Authentication ────────────────────────────────────────────────────────────
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 AUTH_PASSWORD_VALIDATORS = []
-LOGIN_URL = '/accounts/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_URL           = '/accounts/login/'
+LOGIN_REDIRECT_URL  = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+# ── django-allauth config ─────────────────────────────────────────────────────
+ACCOUNT_EMAIL_REQUIRED        = False
+ACCOUNT_EMAIL_VERIFICATION    = 'none'
+ACCOUNT_USERNAME_REQUIRED     = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_LOGIN_ON_SIGNUP       = True
+SOCIALACCOUNT_AUTO_SIGNUP     = True
+SOCIALACCOUNT_LOGIN_ON_GET    = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'APP': {
+            'client_id':     os.environ.get('GOOGLE_CLIENT_ID', ''),
+            'secret':        os.environ.get('GOOGLE_CLIENT_SECRET', ''),
+            'key':           '',
+        }
+    }
+}
 
 # ── Internationalisation ──────────────────────────────────────────────────────
 LANGUAGE_CODE = 'en-us'
@@ -96,11 +133,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ── API Keys (loaded from environment — never hardcode here) ──────────────────
+# ── API Keys ──────────────────────────────────────────────────────────────────
 OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', '')
 DATA_GOV_API_KEY    = os.environ.get('DATA_GOV_API_KEY', '')
 
-# Pass Groq key to environment for the groq library
 _groq_key = os.environ.get('GROQ_API_KEY', '')
 if _groq_key:
     os.environ['GROQ_API_KEY'] = _groq_key

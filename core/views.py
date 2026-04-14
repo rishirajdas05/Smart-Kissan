@@ -1,5 +1,6 @@
 import json
 import os
+from .translation import translate_text, get_lang, set_lang, LANGUAGES
 import io
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -23,9 +24,7 @@ def log_activity(user, page, action=''):
 
 
 def _get_lang(request):
-    if request.user.is_authenticated and hasattr(request.user, 'profile'):
-        return request.user.profile.language or 'en'
-    return request.session.get('language', 'en')
+    return get_lang(request)
 
 
 # ── TRANSLATIONS (Feature 4: Hindi) ──────────────────────────────────────────
@@ -64,6 +63,35 @@ def set_language(request):
             request.user.profile.save()
         request.session['language'] = lang
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+
+# ── LANGUAGE SWITCHING ────────────────────────────────────────────────────────
+def switch_language(request):
+    """Switch UI language and redirect back."""
+    from django.http import HttpResponseRedirect
+    lang = request.GET.get('lang', 'en')
+    set_lang(request, lang)
+    next_url = request.GET.get('next', '/')
+    return HttpResponseRedirect(next_url)
+
+
+def api_translate(request):
+    """API endpoint to translate a string on demand — used by JS frontend."""
+    from django.http import JsonResponse
+    from django.views.decorators.csrf import csrf_exempt
+
+    text = request.GET.get('text', '').strip()
+    lang = request.GET.get('lang', 'en')
+
+    if not text or lang == 'en':
+        return JsonResponse({'translated': text, 'lang': lang})
+
+    # Only translate meaningful strings
+    if len(text) < 2 or text.isdigit():
+        return JsonResponse({'translated': text, 'lang': lang})
+
+    translated = translate_text(text, lang)
+    return JsonResponse({'translated': translated, 'lang': lang})
 
 
 # ── HOME ──────────────────────────────────────────────────────────────────────
@@ -105,6 +133,12 @@ def manual_recommend(request):
                 temperature=temp, humidity=hum, ph=ph, rainfall=rain
             )
             log_activity(request.user, 'manual', f"Recommended: {top['crop']}")
+            # Translate tips if needed
+            lang = get_lang(request)
+            if lang != 'en':
+                for r in results:
+                    if r.get('tips'):
+                        r['tips'] = [translate_text(t, lang) for t in r['tips']]
             context.update({'results': results, 'submitted': True, 'rec_id': rec.id})
         except Exception as e:
             context['error'] = f'Error: {str(e)}'
@@ -354,7 +388,9 @@ def profile(request):
         messages.success(request, 'Profile updated successfully!')
         return redirect('profile')
     return render(request, 'core/profile.html', {
-        'profile': profile, 'lang': _get_lang(request)
+        'profile': profile,
+        'prof': profile,
+        'lang': _get_lang(request),
     })
 
 
@@ -605,6 +641,14 @@ def yield_estimator(request):
             msp_price=result['msp_per_quintal']
         )
         log_activity(request.user, 'yield_estimator', f"{crop} {area}{area_unit}")
+        # Calculate income scenarios
+        income     = result['estimated_income']
+        qtl        = result['total_yield_quintals']
+        msp        = result['msp_per_quintal']
+        result['income_low']       = round(qtl * 0.7 * msp)
+        result['income_high']      = round(qtl * 1.3 * msp)
+        result['yield_low']        = round(qtl * 0.7, 1)
+        result['yield_high']       = round(qtl * 1.3, 1)
         context['result'] = result
     return render(request, 'core/yield_estimator.html', context)
 

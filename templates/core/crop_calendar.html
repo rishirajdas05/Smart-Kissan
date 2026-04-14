@@ -2,13 +2,13 @@
 {% block title %}Crop Calendar{% endblock %}
 {% block content %}
 <div class="page-header" style="background:linear-gradient(135deg,#064e3b,#065f46,#047857);">
-  <h1>📅 Crop Calendar</h1>
+  <h1> Crop Calendar</h1>
   <p>Monthly sowing, growing, and harvesting schedule for Indian crops.</p>
 </div>
 
 <!-- Active this month -->
 <div class="card" style="margin-bottom:24px;">
-  <div class="card-header"><span>🌤️</span><h3>Active in {{ current_month }}</h3></div>
+  <div class="card-header"><span></span><h3>Active in {{ current_month }}</h3></div>
   <div class="card-body">
     {% if active_now %}
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">
@@ -21,7 +21,7 @@
           <div style="font-weight:700;font-size:.85rem;color:var(--text);margin-top:4px;text-transform:capitalize;">{{ item.crop }}</div>
           <div style="font-size:.72rem;margin-top:4px;padding:2px 8px;border-radius:20px;display:inline-block;
                       color:white;background:{% if item.status == 'sow' %}#16a34a{% elif item.status == 'harvest' %}#d97706{% else %}#2563eb{% endif %};">
-            {% if item.status == 'sow' %}🌱 Sow Now{% elif item.status == 'harvest' %}🌾 Harvest{% else %}🌿 Growing{% endif %}
+            {% if item.status == 'sow' %} Sow Now{% elif item.status == 'harvest' %} Harvest{% else %} Growing{% endif %}
           </div>
         </div>
       </a>
@@ -37,9 +37,9 @@
 <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center;">
   <select onchange="window.location='?season='+this.value" class="form-control" style="max-width:160px;">
     <option value="all" {% if selected_season == 'all' %}selected{% endif %}>All Seasons</option>
-    <option value="Kharif" {% if selected_season == 'Kharif' %}selected{% endif %}>🌧 Kharif</option>
-    <option value="Rabi" {% if selected_season == 'Rabi' %}selected{% endif %}>❄ Rabi</option>
-    <option value="Zaid" {% if selected_season == 'Zaid' %}selected{% endif %}>🌞 Zaid</option>
+    <option value="Kharif" {% if selected_season == 'Kharif' %}selected{% endif %}> Kharif</option>
+    <option value="Rabi" {% if selected_season == 'Rabi' %}selected{% endif %}> Rabi</option>
+    <option value="Zaid" {% if selected_season == 'Zaid' %}selected{% endif %}> Zaid</option>
   </select>
   <select onchange="window.location='?crop='+this.value+'&season={{ selected_season }}'" class="form-control" style="max-width:200px;">
     <option value="">-- Select Crop --</option>
@@ -66,9 +66,9 @@
           {% elif m in crop_detail.harvest %}background:rgba(245,158,11,.2);border:2px solid #d97706;
           {% elif m in crop_detail.grow %}background:rgba(59,130,246,.15);border:2px solid #2563eb;
           {% else %}background:var(--surface2);border:1px solid var(--border);{% endif %}">
-          {% if m in crop_detail.sow %}🌱
-          {% elif m in crop_detail.harvest %}🌾
-          {% elif m in crop_detail.grow %}🌿
+          {% if m in crop_detail.sow %}
+          {% elif m in crop_detail.harvest %}
+          {% elif m in crop_detail.grow %}
           {% else %}&nbsp;{% endif %}
         </div>
       </div>
@@ -91,7 +91,7 @@
 
 <!-- Full calendar grid -->
 <div class="card">
-  <div class="card-header"><span>📋</span><h3>Full Calendar Grid</h3></div>
+  <div class="card-header"><span></span><h3>Full Calendar Grid</h3></div>
   <div class="card-body" style="overflow-x:auto;padding:0;">
     <table style="width:100%;border-collapse:collapse;min-width:900px;">
       <thead>
@@ -119,9 +119,9 @@
           </td>
           {% for m in months %}
           <td style="padding:4px;text-align:center;{% if m == current_month %}background:rgba(52,211,153,.08);{% endif %}">
-            {% if m in data.sow %}<span title="Sowing" style="font-size:.9rem;">🌱</span>
-            {% elif m in data.harvest %}<span title="Harvest" style="font-size:.9rem;">🌾</span>
-            {% elif m in data.grow %}<span title="Growing" style="font-size:.9rem;">🌿</span>
+            {% if m in data.sow %}<span title="Sowing" style="font-size:.9rem;"></span>
+            {% elif m in data.harvest %}<span title="Harvest" style="font-size:.9rem;"></span>
+            {% elif m in data.grow %}<span title="Growing" style="font-size:.9rem;"></span>
             {% else %}<span style="color:var(--border);font-size:.7rem;">·</span>{% endif %}
           </td>
           {% endfor %}

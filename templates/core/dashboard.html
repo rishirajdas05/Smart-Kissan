@@ -3,30 +3,30 @@
 {% block content %}
 
 <div class="page-header" style="background:linear-gradient(135deg,#312e81,#4338ca,#6366f1);">
-  <h1>📊 My Dashboard</h1>
+  <h1> My Dashboard</h1>
   <p>Track your activity, crop recommendations, and usage analytics.</p>
 </div>
 
 <!-- Stats -->
 <div class="stats-grid">
   <div class="stat-card animate-slide-up">
-    <div class="stat-icon green">🌾</div>
+    <div class="stat-icon green">&#127807;</div>
     <div><div class="stat-number">{{ total_recs }}</div><div class="stat-label">Total Recommendations</div></div>
   </div>
   <div class="stat-card animate-slide-up">
-    <div class="stat-icon blue">📱</div>
+    <div class="stat-icon blue">&#128196;</div>
     <div><div class="stat-number">{{ total_activities }}</div><div class="stat-label">Page Visits</div></div>
   </div>
   <div class="stat-card animate-slide-up">
-    <div class="stat-icon amber">✏️</div>
+    <div class="stat-icon amber">&#9998;&#65039;</div>
     <div><div class="stat-number">{{ manual_count }}</div><div class="stat-label">Manual Recommendations</div></div>
   </div>
   <div class="stat-card animate-slide-up">
-    <div class="stat-icon red">🤖</div>
+    <div class="stat-icon red">&#129302;</div>
     <div><div class="stat-number">{{ auto_count }}</div><div class="stat-label">Auto Recommendations</div></div>
   </div>
   <div class="stat-card animate-slide-up">
-    <div class="stat-icon green">🪸</div>
+    <div class="stat-icon green">&#127758;</div>
     <div><div class="stat-number">{{ soil_analyses }}</div><div class="stat-label">Soil Analyses</div></div>
   </div>
 </div>
@@ -34,7 +34,7 @@
 <!-- Charts -->
 <div class="charts-grid">
   <div class="card">
-    <div class="card-header"><span>📅</span><h3>Weekly Activity</h3></div>
+    <div class="card-header"><span></span><h3>Weekly Activity</h3></div>
     <div class="card-body">
       <div class="chart-container" style="position:relative;height:220px;">
         <canvas id="weekly-chart"></canvas>
@@ -42,7 +42,7 @@
     </div>
   </div>
   <div class="card">
-    <div class="card-header"><span>🌾</span><h3>Most Recommended Crops</h3></div>
+    <div class="card-header"><span></span><h3>Most Recommended Crops</h3></div>
     <div class="card-body">
       <div class="chart-container" style="position:relative;height:220px;">
         <canvas id="crops-chart"></canvas>
@@ -50,7 +50,7 @@
     </div>
   </div>
   <div class="card">
-    <div class="card-header"><span>📄</span><h3>Pages Visited</h3></div>
+    <div class="card-header"><span></span><h3>Pages Visited</h3></div>
     <div class="card-body">
       <div class="chart-container" style="position:relative;height:220px;">
         <canvas id="pages-chart"></canvas>
@@ -58,7 +58,7 @@
     </div>
   </div>
   <div class="card">
-    <div class="card-header"><span>⚖️</span><h3>Recommendation Method</h3></div>
+    <div class="card-header"><span></span><h3>Recommendation Method</h3></div>
     <div class="card-body" style="display:flex;align-items:center;justify-content:center;">
       <div style="position:relative;height:220px;width:220px;">
         <canvas id="method-chart"></canvas>
@@ -69,7 +69,7 @@
 
 <!-- Recent Recommendations Table -->
 <div class="card" style="margin-top:24px;">
-  <div class="card-header"><span>📋</span><h3>Recent Recommendations</h3>
+  <div class="card-header"><span></span><h3>Recent Recommendations</h3>
     <a href="{% url 'manual' %}" class="btn btn-primary" style="margin-left:auto;padding:6px 14px;font-size:.82rem;">+ New</a>
   </div>
   {% if recs %}
@@ -85,7 +85,7 @@
           <td><span style="font-weight:700;color:var(--green-400);text-transform:capitalize;">{{ r.crop_name }}</span></td>
           <td>
             <span class="badge {% if r.method == 'manual' %}badge-amber{% else %}badge-blue{% endif %}">
-              {% if r.method == 'manual' %}✏️ Manual{% else %}🤖 Auto{% endif %}
+              {% if r.method == 'manual' %} Manual{% else %} Auto{% endif %}
             </span>
           </td>
           <td style="color:var(--text2);">{{ r.city|default:"—" }}</td>
@@ -98,7 +98,7 @@
             <a href="{% url 'export_pdf' r.id %}"
                style="font-size:.78rem;color:var(--green-400);text-decoration:none;
                       padding:3px 8px;border:1px solid var(--green-600);border-radius:6px;">
-              📄 PDF
+               PDF
             </a>
           </td>
           <td style="color:var(--text3);font-size:.82rem;">{{ r.timestamp|date:"d M, H:i" }}</td>
@@ -109,7 +109,7 @@
   </div>
   {% else %}
   <div class="card-body" style="text-align:center;padding:48px;color:var(--text3);">
-    <div style="font-size:3rem;margin-bottom:12px;">🌱</div>
+    <div style="font-size:3rem;margin-bottom:12px;"></div>
     <div style="font-size:1rem;font-weight:600;color:var(--text2);">No recommendations yet</div>
     <div style="font-size:.9rem;margin-top:4px;">
       Start with <a href="{% url 'manual' %}" style="color:var(--green-400);">Manual</a>
@@ -183,7 +183,7 @@ window.addEventListener('load', function() {
     });
   } else {
     cropCanvas.parentElement.innerHTML =
-      '<div style="text-align:center;padding:60px 20px;color:var(--text3);">🌾<br>Make recommendations to see data</div>';
+      '<div style="text-align:center;padding:60px 20px;color:var(--text3);"><br>Make recommendations to see data</div>';
   }
 
   // 3. Pages Doughnut chart
@@ -212,7 +212,7 @@ window.addEventListener('load', function() {
     });
   } else {
     pageCanvas.parentElement.innerHTML =
-      '<div style="text-align:center;padding:60px 20px;color:var(--text3);">📄<br>Visit pages to see data</div>';
+      '<div style="text-align:center;padding:60px 20px;color:var(--text3);"><br>Visit pages to see data</div>';
   }
 
   // 4. Method Pie chart

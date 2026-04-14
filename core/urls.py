@@ -38,4 +38,6 @@ urlpatterns = [
     # ── APIs ─────────────────────────────────────────────────────────────────
     path('api/weather/', views.get_weather_api, name='weather_api'),
     path('api/set-language/', views.set_language, name='set_language'),
+    path('lang/', views.switch_language, name='switch_language'),
+    path('api/translate/', views.api_translate, name='api_translate'),
 ]

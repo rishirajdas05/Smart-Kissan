@@ -1,147 +1,142 @@
+import os
 from pathlib import Path
 from dotenv import load_dotenv
-import os
-import dj_database_url
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-change-this-in-production")
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-dev-only')
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+ALLOWED_HOSTS = ['*']
 
-DEBUG = 'RENDER' not in os.environ
-
-ALLOWED_HOSTS = [
-    "127.0.0.1",
-    "localhost",
-    "smart-kissan.onrender.com",
-    "smart-kissan-2jyj.onrender.com",
-]
-
-RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://smart-kissan.onrender.com",
-    "https://smart-kissan-2jyj.onrender.com",
-]
-if RENDER_EXTERNAL_HOSTNAME:
-    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
-
+# ── Apps ──────────────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    "django.contrib.sites",
-    "allauth",
-    "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.google",
-    "recommender",
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.sites',
+
+    # django-allauth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
+    'core',
+    'accounts',
 ]
 
 SITE_ID = 1
 
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
-]
-
-SOCIALACCOUNT_LOGIN_ON_GET = True
-
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "SCOPE": ["profile", "email"],
-        "AUTH_PARAMS": {"access_type": "online"},
-    }
-}
-
-LOGIN_REDIRECT_URL          = "/home/"
-ACCOUNT_LOGOUT_REDIRECT_URL = "/signup/"
-
+# ── Middleware ─────────────────────────────────────────────────────────────────
 MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
-ROOT_URLCONF = "crop_reco.urls"
+ROOT_URLCONF = 'smart_kissan.urls'
 
 TEMPLATES = [
     {
-        "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": True,
-        "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.contrib.messages.context_processors.messages",
-                "recommender.context_processors.nav_context",
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'core.context_processors.lang_context',
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = "crop_reco.wsgi.application"
+WSGI_APPLICATION = 'smart_kissan.wsgi.application'
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600
-    )
+# ── Database ──────────────────────────────────────────────────────────────────
+if os.environ.get('DATABASE_URL'):
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.environ.get('DATABASE_URL'),
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+# ── Authentication ────────────────────────────────────────────────────────────
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+AUTH_PASSWORD_VALIDATORS = []
+LOGIN_URL           = '/accounts/login/'
+LOGIN_REDIRECT_URL  = '/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'
+
+# ── django-allauth config ─────────────────────────────────────────────────────
+ACCOUNT_EMAIL_REQUIRED        = False
+ACCOUNT_EMAIL_VERIFICATION    = 'none'
+ACCOUNT_USERNAME_REQUIRED     = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_LOGIN_ON_SIGNUP       = True
+SOCIALACCOUNT_AUTO_SIGNUP     = True
+SOCIALACCOUNT_LOGIN_ON_GET    = True
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'APP': {
+            'client_id':     os.environ.get('GOOGLE_CLIENT_ID', ''),
+            'secret':        os.environ.get('GOOGLE_CLIENT_SECRET', ''),
+            'key':           '',
+        }
+    }
 }
 
-AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
-]
+# ── Internationalisation ──────────────────────────────────────────────────────
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE     = 'Asia/Kolkata'
+USE_I18N      = True
+USE_TZ        = True
 
-LANGUAGE_CODE = "en"
+# ── Static files ──────────────────────────────────────────────────────────────
+STATIC_URL       = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'core' / 'static']
+STATIC_ROOT      = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-LANGUAGES = [
-    ("en", "English"),
-    ("hi", "Hindi"),
-    ("bn", "Bengali"),
-    ("te", "Telugu"),
-    ("mr", "Marathi"),
-    ("ta", "Tamil"),
-]
+# ── Media files ───────────────────────────────────────────────────────────────
+MEDIA_URL  = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
-TIME_ZONE    = "Asia/Kolkata"
-USE_I18N     = True
-USE_TZ       = True
-LOCALE_PATHS = [BASE_DIR / "locale"]
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SESSION_ENGINE = "django.contrib.sessions.backends.db"
+# ── API Keys ──────────────────────────────────────────────────────────────────
+OPENWEATHER_API_KEY = os.environ.get('OPENWEATHER_API_KEY', '')
+DATA_GOV_API_KEY    = os.environ.get('DATA_GOV_API_KEY', '')
 
-STATIC_URL  = "static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [BASE_DIR / "static"]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")
-
-if not DEBUG:
-    SECURE_PROXY_SSL_HEADER     = ("HTTP_X_FORWARDED_PROTO", "https")
-    SECURE_SSL_REDIRECT         = True
-    SESSION_COOKIE_SECURE       = True
-    CSRF_COOKIE_SECURE          = True
-    SECURE_BROWSER_XSS_FILTER   = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS             = "DENY"
+_groq_key = os.environ.get('GROQ_API_KEY', '')
+if _groq_key:
+    os.environ['GROQ_API_KEY'] = _groq_key

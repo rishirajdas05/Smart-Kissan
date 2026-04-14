@@ -3,15 +3,15 @@
 {% block content %}
 
 <div class="page-header" style="background:linear-gradient(135deg,#1e3a5f,#155e75,#0e7490);">
-  <h1>💬 Support Center</h1>
+  <h1> Support Center</h1>
   <p>Need help? Reach out to us and we'll respond within 24 hours.</p>
 </div>
 
 <div style="display:grid;grid-template-columns:1fr 380px;gap:24px;" class="support-grid">
 
-<!-- ── Contact Form ── -->
+<!--  Contact Form  -->
 <div class="card animate-slide-up">
-  <div class="card-header"><span style="font-size:1.4rem;">📝</span><h3>Send Us a Message</h3></div>
+  <div class="card-header"><span style="font-size:1.4rem;"></span><h3>Send Us a Message</h3></div>
   <div class="card-body">
     <form method="post">
       {% csrf_token %}
@@ -44,42 +44,45 @@
         <textarea name="message" class="form-control" rows="6"
                   placeholder="Describe your issue or question in detail..." required></textarea>
       </div>
-      <button type="submit" class="btn btn-primary btn-lg">📨 Send Message</button>
+      <button type="submit" class="btn btn-primary btn-lg"> Send Message</button>
     </form>
   </div>
 </div>
 
-<!-- ── Right panel ── -->
+<!--  Right panel  -->
 <div>
   <!-- Contact Info -->
   <div class="card animate-slide-up" style="margin-bottom:16px;">
-    <div class="card-header"><span style="font-size:1.3rem;">📬</span><h3>Contact Information</h3></div>
+    <div class="card-header"><span style="font-size:1.3rem;"></span><h3>Contact Information</h3></div>
     <div class="card-body" style="display:flex;flex-direction:column;gap:12px;">
 
+      <!-- Email -->
       <div style="display:flex;align-items:center;gap:12px;padding:14px;
                   background:rgba(58,156,87,.1);border:1px solid rgba(58,156,87,.2);
                   border-radius:10px;">
-        <span style="font-size:1.5rem;flex-shrink:0;">📧</span>
+        <span style="font-size:1.5rem;flex-shrink:0;"></span>
         <div>
           <div style="font-weight:700;font-size:.9rem;color:var(--text);">Email Support</div>
           <div style="font-size:.85rem;color:var(--text2);margin-top:2px;">support@smartkissan.in</div>
         </div>
       </div>
 
+      <!-- Helpline -->
       <div style="display:flex;align-items:center;gap:12px;padding:14px;
                   background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);
                   border-radius:10px;">
-        <span style="font-size:1.5rem;flex-shrink:0;">📞</span>
+        <span style="font-size:1.5rem;flex-shrink:0;"></span>
         <div>
           <div style="font-weight:700;font-size:.9rem;color:var(--text);">Helpline</div>
           <div style="font-size:.85rem;color:var(--text2);margin-top:2px;">1800-XXX-XXXX (Toll Free)</div>
         </div>
       </div>
 
+      <!-- Response Time -->
       <div style="display:flex;align-items:center;gap:12px;padding:14px;
                   background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.2);
                   border-radius:10px;">
-        <span style="font-size:1.5rem;flex-shrink:0;">🕐</span>
+        <span style="font-size:1.5rem;flex-shrink:0;"></span>
         <div>
           <div style="font-weight:700;font-size:.9rem;color:var(--text);">Response Time</div>
           <div style="font-size:.85rem;color:var(--text2);margin-top:2px;">Within 24 hours</div>
@@ -91,7 +94,7 @@
 
   <!-- FAQ -->
   <div class="card animate-slide-up">
-    <div class="card-header"><span style="font-size:1.3rem;">❓</span><h3>Frequently Asked Questions</h3></div>
+    <div class="card-header"><span style="font-size:1.3rem;"></span><h3>Frequently Asked Questions</h3></div>
     <div class="card-body" style="padding:0 20px;">
 
       <div class="faq-item" style="border-bottom:1px solid var(--border);padding:14px 0;cursor:pointer;">
@@ -155,7 +158,7 @@
 
 <script>
 function toggleFaq(el) {
-  const ans  = el.nextElementSibling;
+  const ans = el.nextElementSibling;
   const icon = el.querySelector('span:last-child');
   const open = ans.style.display !== 'none';
   ans.style.display = open ? 'none' : 'block';
