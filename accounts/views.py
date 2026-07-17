@@ -38,7 +38,7 @@ def signup_view(request):
                 username=username, email=email, password=password,
                 first_name=first_name, last_name=last_name
             )
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             messages.success(request, f'Welcome to Smart-Kissan, {first_name or username}!')
             return redirect('home')
     return render(request, 'accounts/signup.html')
