@@ -9,6 +9,13 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-local-dev-only')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 ALLOWED_HOSTS = ['*']
 
+# Trust HTTPS traffic coming through Railway's reverse proxy, and trust
+# CSRF requests (login, forms) originating from the deployed domain(s).
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o.strip()
+]
+
 # ── Apps ──────────────────────────────────────────────────────────────────────
 INSTALLED_APPS = [
     'django.contrib.admin',
