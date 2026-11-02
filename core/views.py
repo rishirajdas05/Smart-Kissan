@@ -483,7 +483,7 @@ def chat_api(request):
         msgs.append({'role': 'user', 'content': message})
 
         response = client.chat.completions.create(
-            model='llama3-70b-8192',
+            model='openai/gpt-oss-20b',
             messages=msgs,
             max_tokens=600,
             temperature=0.7,
