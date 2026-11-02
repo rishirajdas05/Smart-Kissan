@@ -1034,3 +1034,4 @@ def submit_feedback(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
+
