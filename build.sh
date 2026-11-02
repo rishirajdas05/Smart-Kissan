@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+﻿#!/usr/bin/env bash
 set -o errexit
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -14,11 +14,17 @@ python manage.py collectstatic --noinput
 echo "🗄️  Running migrations..."
 python manage.py migrate
 
-echo "🌐 Setting site domain for Google OAuth..."
+echo "🌐 Setting site domain and Google OAuth app..."
 python manage.py shell -c "
+import os
 from django.contrib.sites.models import Site
-Site.objects.update_or_create(id=1, defaults={'domain': 'smart-kissan.onrender.com', 'name': 'Smart-Kissan'})
+from allauth.socialaccount.models import SocialApp
+site, _ = Site.objects.update_or_create(id=1, defaults={'domain': 'smart-kissan.onrender.com', 'name': 'Smart-Kissan'})
 print('Site domain set to smart-kissan.onrender.com')
+SocialApp.objects.filter(provider='google').delete()
+app = SocialApp.objects.create(provider='google', name='Google', client_id=os.environ.get('GOOGLE_CLIENT_ID', ''), secret=os.environ.get('GOOGLE_CLIENT_SECRET', ''))
+app.sites.add(site)
+print('Google SocialApp created and linked to site')
 "
 
 echo "🤖 Training ML model (119 crops)..."
