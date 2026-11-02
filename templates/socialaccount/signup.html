@@ -1,10 +1,39 @@
+﻿{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complete Sign Up | Smart-Kissan</title>
+<link rel="icon" type="image/png" href="{% static 'core/img/icon.png' %}">
+<link rel="stylesheet" href="{% static 'core/css/main.css' %}">
+<script>(function(){ document.documentElement.setAttribute('data-theme', localStorage.getItem('sk-theme')||'dark'); })();</script>
 </head>
 <body>
-$END$
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <img src="{% static 'core/img/logo_circle.png' %}" alt="Smart-Kissan" style="width:70px;height:70px;object-fit:contain;">
+      <h1 style="margin-top:10px;">Almost there!</h1>
+      <p>Confirm your details to finish signing in with Google</p>
+    </div>
+    {% if form.errors %}
+      <div class="alert alert-error">Please correct the errors below.</div>
+    {% endif %}
+    <form method="post" action="{% url 'socialaccount_signup' %}">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div style="color:var(--red-400);font-size:.8rem;margin-top:4px;">{{ field.errors|join:", " }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary btn-full btn-lg">Continue</button>
+    </form>
+  </div>
+</div>
 </body>
 </html>
