@@ -483,7 +483,7 @@ def chat_api(request):
         msgs.append({'role': 'user', 'content': message})
 
         response = client.chat.completions.create(
-            model='llama-3.3-70b-versatile',
+            model='llama3-70b-8192',
             messages=msgs,
             max_tokens=600,
             temperature=0.7,
@@ -501,7 +501,7 @@ def chat_api(request):
         elif 'api_key' in err.lower() or 'authentication' in err.lower():
             fallback = 'Invalid Groq API key. Please check GROQ_API_KEY in settings.py.'
         elif 'model' in err.lower() and ('not found' in err.lower() or '404' in err):
-            fallback = f'Model error: {err[:200]}'
+            fallback = 'Model unavailable. Please try again in a moment.'
         else:
             fallback = f'AI error: {err[:120]}'
         ChatMessage.objects.create(user=request.user, role='assistant', content=fallback)
@@ -1033,3 +1033,4 @@ def submit_feedback(request):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
