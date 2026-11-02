@@ -14,6 +14,13 @@ python manage.py collectstatic --noinput
 echo "🗄️  Running migrations..."
 python manage.py migrate
 
+echo "🌐 Setting site domain for Google OAuth..."
+python manage.py shell -c "
+from django.contrib.sites.models import Site
+Site.objects.update_or_create(id=1, defaults={'domain': 'smart-kissan.onrender.com', 'name': 'Smart-Kissan'})
+print('Site domain set to smart-kissan.onrender.com')
+"
+
 echo "🤖 Training ML model (119 crops)..."
 python core/ml_models/train_model.py
 
