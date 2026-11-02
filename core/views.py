@@ -501,7 +501,7 @@ def chat_api(request):
         elif 'api_key' in err.lower() or 'authentication' in err.lower():
             fallback = 'Invalid Groq API key. Please check GROQ_API_KEY in settings.py.'
         elif 'model' in err.lower() and ('not found' in err.lower() or '404' in err):
-            fallback = 'Model unavailable. Please try again in a moment.'
+            fallback = f'Model error: {err[:200]}'
         else:
             fallback = f'AI error: {err[:120]}'
         ChatMessage.objects.create(user=request.user, role='assistant', content=fallback)
